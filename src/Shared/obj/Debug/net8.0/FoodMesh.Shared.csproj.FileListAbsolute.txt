@@ -1,0 +1,12 @@
+D:\Backend Self Project\FoodMesh\src\Shared\bin\Debug\net8.0\FoodMesh.Shared.deps.json
+D:\Backend Self Project\FoodMesh\src\Shared\bin\Debug\net8.0\FoodMesh.Shared.dll
+D:\Backend Self Project\FoodMesh\src\Shared\bin\Debug\net8.0\FoodMesh.Shared.pdb
+D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\FoodMesh.Shared.csproj.AssemblyReference.cache
+D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\FoodMesh.Shared.GeneratedMSBuildEditorConfig.editorconfig
+D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\FoodMesh.Shared.AssemblyInfoInputs.cache
+D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\FoodMesh.Shared.AssemblyInfo.cs
+D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\FoodMesh.Shared.csproj.CoreCompileInputs.cache
+D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\FoodMesh.Shared.dll
+D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\refint\FoodMesh.Shared.dll
+D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\FoodMesh.Shared.pdb
+D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\ref\FoodMesh.Shared.dll

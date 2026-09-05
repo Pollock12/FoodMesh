@@ -1,0 +1,15 @@
+D:\Backend Self Project\FoodMesh\src\Domain\bin\Debug\net8.0\FoodMesh.Domain.deps.json
+D:\Backend Self Project\FoodMesh\src\Domain\bin\Debug\net8.0\FoodMesh.Domain.dll
+D:\Backend Self Project\FoodMesh\src\Domain\bin\Debug\net8.0\FoodMesh.Domain.pdb
+D:\Backend Self Project\FoodMesh\src\Domain\bin\Debug\net8.0\FoodMesh.Shared.dll
+D:\Backend Self Project\FoodMesh\src\Domain\bin\Debug\net8.0\FoodMesh.Shared.pdb
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.Domain.csproj.AssemblyReference.cache
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.Domain.AssemblyInfoInputs.cache
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.Domain.AssemblyInfo.cs
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.Domain.csproj.CoreCompileInputs.cache
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.D8200699.Up2Date
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.Domain.dll
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\refint\FoodMesh.Domain.dll
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.Domain.pdb
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\ref\FoodMesh.Domain.dll

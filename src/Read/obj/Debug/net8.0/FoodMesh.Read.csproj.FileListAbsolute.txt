@@ -1,0 +1,17 @@
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.Read.csproj.AssemblyReference.cache
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.Read.GeneratedMSBuildEditorConfig.editorconfig
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.Read.AssemblyInfoInputs.cache
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.Read.AssemblyInfo.cs
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.Read.csproj.CoreCompileInputs.cache
+D:\Backend Self Project\FoodMesh\src\Read\bin\Debug\net8.0\FoodMesh.Read.deps.json
+D:\Backend Self Project\FoodMesh\src\Read\bin\Debug\net8.0\FoodMesh.Read.dll
+D:\Backend Self Project\FoodMesh\src\Read\bin\Debug\net8.0\FoodMesh.Read.pdb
+D:\Backend Self Project\FoodMesh\src\Read\bin\Debug\net8.0\FoodMesh.Domain.dll
+D:\Backend Self Project\FoodMesh\src\Read\bin\Debug\net8.0\FoodMesh.Shared.dll
+D:\Backend Self Project\FoodMesh\src\Read\bin\Debug\net8.0\FoodMesh.Domain.pdb
+D:\Backend Self Project\FoodMesh\src\Read\bin\Debug\net8.0\FoodMesh.Shared.pdb
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.DA6E7787.Up2Date
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.Read.dll
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\refint\FoodMesh.Read.dll
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.Read.pdb
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\ref\FoodMesh.Read.dll

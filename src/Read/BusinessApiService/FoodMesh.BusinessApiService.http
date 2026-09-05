@@ -1,0 +1,6 @@
+@FoodMesh.BusinessApiService_HostAddress = http://localhost:5248
+
+GET {{FoodMesh.BusinessApiService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

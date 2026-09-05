@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "4945ktji0Oc=",
+  "success": true,
+  "projectFilePath": "D:\\Backend Self Project\\FoodMesh\\src\\Domain\\FoodMesh.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\atahar.uddin\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
