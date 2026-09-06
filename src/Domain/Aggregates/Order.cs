@@ -11,7 +11,7 @@ namespace FoodMesh.Domain.Aggregates;
 /// </summary>
 public sealed class Order : AggregateRoot<Guid>
 {
-    private readonly List<OrderItem> _items = [];
+    private List<OrderItem> _items = [];
 
     public Guid CustomerId { get; private set; }
     public Guid RestaurantId { get; private set; }
