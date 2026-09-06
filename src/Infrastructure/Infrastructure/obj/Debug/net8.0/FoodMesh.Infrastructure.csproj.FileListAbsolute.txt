@@ -17,3 +17,4 @@ D:\Backend Self Project\FoodMesh\src\Infrastructure\Infrastructure\obj\Debug\net
 D:\Backend Self Project\FoodMesh\src\Infrastructure\Infrastructure\obj\Debug\net8.0\refint\FoodMesh.Infrastructure.dll
 D:\Backend Self Project\FoodMesh\src\Infrastructure\Infrastructure\obj\Debug\net8.0\FoodMesh.Infrastructure.pdb
 D:\Backend Self Project\FoodMesh\src\Infrastructure\Infrastructure\obj\Debug\net8.0\ref\FoodMesh.Infrastructure.dll
+D:\Backend Self Project\FoodMesh\src\Infrastructure\Infrastructure\obj\Debug\net8.0\FoodMesh.Infrastructure.sourcelink.json

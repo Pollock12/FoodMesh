@@ -61,3 +61,4 @@ D:\Backend Self Project\FoodMesh\src\Read\BusinessApiService\obj\Debug\net8.0\re
 D:\Backend Self Project\FoodMesh\src\Read\BusinessApiService\obj\Debug\net8.0\FoodMesh.BusinessApiService.pdb
 D:\Backend Self Project\FoodMesh\src\Read\BusinessApiService\obj\Debug\net8.0\FoodMesh.BusinessApiService.genruntimeconfig.cache
 D:\Backend Self Project\FoodMesh\src\Read\BusinessApiService\obj\Debug\net8.0\ref\FoodMesh.BusinessApiService.dll
+D:\Backend Self Project\FoodMesh\src\Read\BusinessApiService\obj\Debug\net8.0\FoodMesh.BusinessApiService.sourcelink.json

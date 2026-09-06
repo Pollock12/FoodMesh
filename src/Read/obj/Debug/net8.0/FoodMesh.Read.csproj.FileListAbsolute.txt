@@ -15,3 +15,4 @@ D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.Read.dll
 D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\refint\FoodMesh.Read.dll
 D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.Read.pdb
 D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\ref\FoodMesh.Read.dll
+D:\Backend Self Project\FoodMesh\src\Read\obj\Debug\net8.0\FoodMesh.Read.sourcelink.json

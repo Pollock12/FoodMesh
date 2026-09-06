@@ -13,3 +13,4 @@ D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.Domain.dll
 D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\refint\FoodMesh.Domain.dll
 D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.Domain.pdb
 D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\ref\FoodMesh.Domain.dll
+D:\Backend Self Project\FoodMesh\src\Domain\obj\Debug\net8.0\FoodMesh.Domain.sourcelink.json

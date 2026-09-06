@@ -10,3 +10,4 @@ D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\FoodMesh.Shared.dll
 D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\refint\FoodMesh.Shared.dll
 D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\FoodMesh.Shared.pdb
 D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\ref\FoodMesh.Shared.dll
+D:\Backend Self Project\FoodMesh\src\Shared\obj\Debug\net8.0\FoodMesh.Shared.sourcelink.json

@@ -104,3 +104,4 @@ D:\Backend Self Project\FoodMesh\tests\Domain.Tests\obj\Debug\net8.0\refint\Food
 D:\Backend Self Project\FoodMesh\tests\Domain.Tests\obj\Debug\net8.0\FoodMesh.Domain.Tests.pdb
 D:\Backend Self Project\FoodMesh\tests\Domain.Tests\obj\Debug\net8.0\FoodMesh.Domain.Tests.genruntimeconfig.cache
 D:\Backend Self Project\FoodMesh\tests\Domain.Tests\obj\Debug\net8.0\ref\FoodMesh.Domain.Tests.dll
+D:\Backend Self Project\FoodMesh\tests\Domain.Tests\obj\Debug\net8.0\FoodMesh.Domain.Tests.sourcelink.json
