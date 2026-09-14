@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\src\Domain\FoodMesh.Domain.csproj" />
     <ProjectReference Include="..\..\src\Shared\FoodMesh.Shared.csproj" />
     <ProjectReference Include="..\..\src\Infrastructure\Infrastructure\FoodMesh.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Application\FoodMesh.Application.csproj" />
   </ItemGroup>
 
 </Project>

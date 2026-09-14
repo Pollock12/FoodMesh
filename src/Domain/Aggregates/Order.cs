@@ -84,6 +84,27 @@ public sealed class Order : AggregateRoot<Guid>
     }
 
     /// <summary>
+    /// Factory method to create an Order aggregate using a Domain Creation DTO.
+    /// Encapsulates creation of order and all constituent OrderItems atomically.
+    /// </summary>
+    public static Order Create(FoodMesh.Domain.Models.OrderCreationDto dto)
+    {
+        ArgumentNullException.ThrowIfNull(dto);
+
+        var order = new Order(dto.OrderId, dto.CustomerId, dto.RestaurantId, dto.DeliveryAddress, dto.DeliveryFee);
+        if (dto.Items != null)
+        {
+            foreach (var item in dto.Items)
+            {
+                order.AddItem(item.MenuItemId, item.ItemName, item.UnitPrice, item.Quantity);
+            }
+        }
+
+        order.AddDomainEvent(new OrderPlacedDomainEvent(order.Id, dto.CustomerId, dto.RestaurantId, order.TotalAmount, order.PlacedAtUtc));
+        return order;
+    }
+
+    /// <summary>
     /// Adds a line item to the order. Can only be modified while order is PendingPayment.
     /// </summary>
     public void AddItem(Guid menuItemId, string itemName, Money unitPrice, int quantity)

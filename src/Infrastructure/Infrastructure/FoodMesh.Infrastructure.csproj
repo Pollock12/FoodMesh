@@ -1,8 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\..\Domain\FoodMesh.Domain.csproj" />
-    <ProjectReference Include="..\..\Application\FoodMesh.Application.csproj" />
     <ProjectReference Include="..\..\Shared\FoodMesh.Shared.csproj" />
   </ItemGroup>
 
