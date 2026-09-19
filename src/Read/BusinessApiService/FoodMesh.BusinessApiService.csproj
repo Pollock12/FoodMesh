@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Domain\FoodMesh.Domain.csproj" />
     <ProjectReference Include="..\..\Application\FoodMesh.Application.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Infrastructure\FoodMesh.Infrastructure.csproj" />
     <ProjectReference Include="..\FoodMesh.Read.csproj" />

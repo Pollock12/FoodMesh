@@ -28,6 +28,7 @@
     <ProjectReference Include="..\..\src\Infrastructure\Infrastructure\FoodMesh.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Application\FoodMesh.Application.csproj" />
     <ProjectReference Include="..\..\src\Read\FoodMesh.Read.csproj" />
+    <ProjectReference Include="..\..\src\Read\BusinessApiService\FoodMesh.BusinessApiService.csproj" />
   </ItemGroup>
 
 </Project>
