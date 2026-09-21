@@ -23,15 +23,10 @@ public sealed class OrderFulfillmentDomainService : IOrderFulfillmentDomainServi
             .ToList();
 
         if (candidates.Count == 0)
-            return FulfillmentResult.Failed("No available delivery partners nearby at this time.");
+            return FulfillmentResult.Failed("No available delivery partners at this time.");
 
-        // Select the closest partner by Euclidean / Haversine distance
-        var targetLat = order.DeliveryAddress.Latitude;
-        var targetLon = order.DeliveryAddress.Longitude;
-
-        var bestPartner = candidates
-            .OrderBy(p => Math.Pow(p.CurrentLatitude - targetLat, 2) + Math.Pow(p.CurrentLongitude - targetLon, 2))
-            .First();
+        // Select the first available delivery partner
+        var bestPartner = candidates.First();
 
         // Cross-aggregate state update
         bestPartner.AssignOrder(order.Id);

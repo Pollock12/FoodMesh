@@ -11,16 +11,12 @@ public sealed class DeliveryAddress : ValueObject
     public string City { get; }
     public string PostalCode { get; }
     public string ContactPhoneNumber { get; }
-    public double Latitude { get; }
-    public double Longitude { get; }
 
     public DeliveryAddress(
         string street,
         string city,
         string postalCode,
-        string contactPhoneNumber,
-        double latitude = 0.0,
-        double longitude = 0.0)
+        string contactPhoneNumber)
     {
         if (string.IsNullOrWhiteSpace(street))
             throw new DomainException("Street address is required.", "INVALID_STREET");
@@ -35,8 +31,6 @@ public sealed class DeliveryAddress : ValueObject
         City = city.Trim();
         PostalCode = postalCode?.Trim() ?? string.Empty;
         ContactPhoneNumber = contactPhoneNumber.Trim();
-        Latitude = latitude;
-        Longitude = longitude;
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()
@@ -45,8 +39,6 @@ public sealed class DeliveryAddress : ValueObject
         yield return City.ToUpperInvariant();
         yield return PostalCode.ToUpperInvariant();
         yield return ContactPhoneNumber;
-        yield return Latitude;
-        yield return Longitude;
     }
 
     public override string ToString() => $"{Street}, {City} {PostalCode} (Contact: {ContactPhoneNumber})";

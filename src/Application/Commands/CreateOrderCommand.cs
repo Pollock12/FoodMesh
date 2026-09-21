@@ -10,8 +10,6 @@ namespace FoodMesh.Application.Commands;
 public sealed record CreateOrderCommand(
     Guid CustomerId,
     Guid RestaurantId,
-    double RestaurantLatitude,
-    double RestaurantLongitude,
     DeliveryAddressDto DeliveryAddress,
     List<OrderItemDto> Items,
     string Currency = "USD",

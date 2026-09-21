@@ -78,9 +78,7 @@ public static class BsonClassMaps
                         a.Street,
                         a.City,
                         a.PostalCode,
-                        a.ContactPhoneNumber,
-                        a.Latitude,
-                        a.Longitude));
+                        a.ContactPhoneNumber));
                 });
             }
 

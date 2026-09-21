@@ -56,12 +56,10 @@ public sealed class CreateOrderCommandHandler : IRequestHandler<CreateOrderComma
             if (!areItemsAvailable)
                 return Result<Guid>.Failure("One or more selected menu items are currently unavailable.");
 
-            // 2. Calculate dynamic delivery fee
+            // 2. Calculate delivery fee
             var address = command.DeliveryAddress.ToDomain();
             var deliveryFee = _feeCalculator.CalculateFee(
                 address,
-                command.RestaurantLatitude,
-                command.RestaurantLongitude,
                 command.Currency);
 
             // 3. Translate Command -> DomainDto via DataMapper (the Translator)

@@ -18,8 +18,6 @@ public sealed class OrderDetailsViewModel
     public string DeliveryCity { get; set; } = string.Empty;
     public string DeliveryPostalCode { get; set; } = string.Empty;
     public string ContactPhoneNumber { get; set; } = string.Empty;
-    public double DeliveryLatitude { get; set; }
-    public double DeliveryLongitude { get; set; }
 
     public decimal Subtotal { get; set; }
     public decimal DeliveryFee { get; set; }

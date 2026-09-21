@@ -15,9 +15,7 @@ public static class OrderDataMapper
             street: dto.Street,
             city: dto.City,
             postalCode: dto.PostalCode,
-            contactPhoneNumber: dto.ContactPhoneNumber,
-            latitude: dto.Latitude,
-            longitude: dto.Longitude);
+            contactPhoneNumber: dto.ContactPhoneNumber);
     }
 
     public static DeliveryAddressDto ToDto(this DeliveryAddress address)
@@ -29,9 +27,7 @@ public static class OrderDataMapper
             Street = address.Street,
             City = address.City,
             PostalCode = address.PostalCode,
-            ContactPhoneNumber = address.ContactPhoneNumber,
-            Latitude = address.Latitude,
-            Longitude = address.Longitude
+            ContactPhoneNumber = address.ContactPhoneNumber
         };
     }
 

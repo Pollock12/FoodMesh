@@ -55,8 +55,6 @@ public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery
             DeliveryCity = order.DeliveryAddress.City,
             DeliveryPostalCode = order.DeliveryAddress.PostalCode,
             ContactPhoneNumber = order.DeliveryAddress.ContactPhoneNumber,
-            DeliveryLatitude = order.DeliveryAddress.Latitude,
-            DeliveryLongitude = order.DeliveryAddress.Longitude,
             Subtotal = order.Subtotal.Amount,
             DeliveryFee = order.DeliveryFee.Amount,
             TotalAmount = order.TotalAmount.Amount,

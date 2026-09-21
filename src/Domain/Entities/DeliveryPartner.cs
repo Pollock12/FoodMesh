@@ -4,7 +4,7 @@ namespace FoodMesh.Domain.Entities;
 
 /// <summary>
 /// Entity representing a delivery partner (rider).
-/// Manages rider availability, vehicle type, location coordinates, and active delivery assignments.
+/// Manages rider availability, vehicle type, and active delivery assignments.
 /// </summary>
 public sealed class DeliveryPartner : Entity<Guid>
 {
@@ -12,8 +12,6 @@ public sealed class DeliveryPartner : Entity<Guid>
     public string PhoneNumber { get; private set; } = string.Empty;
     public string VehicleType { get; private set; } = "Bike";
     public bool IsAvailable { get; private set; }
-    public double CurrentLatitude { get; private set; }
-    public double CurrentLongitude { get; private set; }
     public Guid? ActiveOrderId { get; private set; }
 
     private DeliveryPartner() : base() { }
@@ -22,9 +20,7 @@ public sealed class DeliveryPartner : Entity<Guid>
         Guid id,
         string fullName,
         string phoneNumber,
-        string vehicleType = "Bike",
-        double latitude = 0.0,
-        double longitude = 0.0) : base(id)
+        string vehicleType = "Bike") : base(id)
     {
         if (string.IsNullOrWhiteSpace(fullName))
             throw new DomainException("Delivery partner name is required.", "INVALID_NAME");
@@ -36,8 +32,6 @@ public sealed class DeliveryPartner : Entity<Guid>
         PhoneNumber = phoneNumber.Trim();
         VehicleType = vehicleType.Trim();
         IsAvailable = true;
-        CurrentLatitude = latitude;
-        CurrentLongitude = longitude;
         ActiveOrderId = null;
     }
 
@@ -58,13 +52,6 @@ public sealed class DeliveryPartner : Entity<Guid>
     {
         ActiveOrderId = null;
         IsAvailable = true;
-        UpdatedAtUtc = DateTime.UtcNow;
-    }
-
-    public void UpdateLocation(double latitude, double longitude)
-    {
-        CurrentLatitude = latitude;
-        CurrentLongitude = longitude;
         UpdatedAtUtc = DateTime.UtcNow;
     }
 

@@ -49,8 +49,6 @@ public class ApiControllerTests
         var command = new CreateOrderCommand(
             CustomerId: Guid.NewGuid(),
             RestaurantId: Guid.NewGuid(),
-            RestaurantLatitude: 23.81,
-            RestaurantLongitude: 90.41,
             DeliveryAddress: new DeliveryAddressDto { Street = "A", City = "B", ContactPhoneNumber = "123" },
             Items: [new OrderItemDto { MenuItemId = Guid.NewGuid(), ItemName = "Pizza", UnitPrice = 15m, Quantity = 1 }]);
 
@@ -76,8 +74,6 @@ public class ApiControllerTests
         var command = new CreateOrderCommand(
             CustomerId: Guid.NewGuid(),
             RestaurantId: Guid.NewGuid(),
-            RestaurantLatitude: 0,
-            RestaurantLongitude: 0,
             DeliveryAddress: new DeliveryAddressDto { Street = "A", City = "B", ContactPhoneNumber = "123" },
             Items: []);
 

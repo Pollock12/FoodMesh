@@ -30,9 +30,7 @@ public sealed class GetAvailableRestaurantsQueryHandler : IRequestHandler<GetAva
                 RestaurantId = g.Key,
                 RestaurantName = $"Restaurant {g.Key.ToString()[..8]}",
                 Cuisine = g.FirstOrDefault()?.Category ?? "Various",
-                AvailableItemCount = g.Count(),
-                Latitude = 23.8103, // Default city center reference
-                Longitude = 90.4125
+                AvailableItemCount = g.Count()
             })
             .ToList();
 

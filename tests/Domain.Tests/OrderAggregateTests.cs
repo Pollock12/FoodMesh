@@ -13,9 +13,7 @@ public class OrderAggregateTests
         street: "123 Food Street",
         city: "Tech City",
         postalCode: "12345",
-        contactPhoneNumber: "+1234567890",
-        latitude: 23.8103,
-        longitude: 90.4125);
+        contactPhoneNumber: "+1234567890");
 
     [Fact]
     public void Order_Create_Should_Initialize_And_Raise_OrderPlacedDomainEvent()

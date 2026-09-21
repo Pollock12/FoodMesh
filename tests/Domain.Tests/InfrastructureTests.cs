@@ -46,7 +46,7 @@ public class InfrastructureTests
 
         // Arrange
         var address = new FoodMesh.Domain.ValueObjects.DeliveryAddress(
-            "123 Street", "Dhaka", "1212", "+8801700000000", 23.81, 90.41);
+            "123 Street", "Dhaka", "1212", "+8801700000000");
         var order = FoodMesh.Domain.Aggregates.Order.Create(
             Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new FoodMesh.Domain.ValueObjects.Money(3.50m, "USD"));
         order.AddItem(Guid.NewGuid(), "Hot Pizza", new FoodMesh.Domain.ValueObjects.Money(15.00m, "USD"), 2);
@@ -79,7 +79,7 @@ public class InfrastructureTests
 
         // Arrange
         var partner = new FoodMesh.Domain.Entities.DeliveryPartner(
-            Guid.NewGuid(), "Speedy Rider", "+123456789", "Motorcycle", 23.8, 90.4);
+            Guid.NewGuid(), "Speedy Rider", "+123456789", "Motorcycle");
         var item = new FoodMesh.Domain.Entities.RestaurantItem(
             Guid.NewGuid(), Guid.NewGuid(), "Burger", "Delicious", new FoodMesh.Domain.ValueObjects.Money(8.50m, "USD"), "FastFood");
 

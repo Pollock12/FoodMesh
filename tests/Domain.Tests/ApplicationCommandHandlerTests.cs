@@ -47,7 +47,7 @@ public class ApplicationCommandHandlerTests
     {
         // Arrange
         _mockFeeCalculator
-            .Setup(f => f.CalculateFee(It.IsAny<DeliveryAddress>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<string>()))
+            .Setup(f => f.CalculateFee(It.IsAny<DeliveryAddress>(), It.IsAny<string>()))
             .Returns(new Money(2.50m, "USD"));
 
         var handler = new CreateOrderCommandHandler(
@@ -59,8 +59,6 @@ public class ApplicationCommandHandlerTests
         var command = new CreateOrderCommand(
             CustomerId: Guid.NewGuid(),
             RestaurantId: Guid.NewGuid(),
-            RestaurantLatitude: 23.81,
-            RestaurantLongitude: 90.41,
             DeliveryAddress: new DeliveryAddressDto
             {
                 Street = "123 Main St",
@@ -101,8 +99,6 @@ public class ApplicationCommandHandlerTests
         var command = new CreateOrderCommand(
             CustomerId: Guid.NewGuid(),
             RestaurantId: Guid.NewGuid(),
-            RestaurantLatitude: 23.81,
-            RestaurantLongitude: 90.41,
             DeliveryAddress: new DeliveryAddressDto { Street = "A", City = "B", ContactPhoneNumber = "123" },
             Items: [new OrderItemDto { MenuItemId = Guid.NewGuid(), ItemName = "Burger", UnitPrice = 10m, Quantity = 1 }]);
 
@@ -127,8 +123,6 @@ public class ApplicationCommandHandlerTests
         var command = new CreateOrderCommand(
             CustomerId: Guid.NewGuid(),
             RestaurantId: Guid.NewGuid(),
-            RestaurantLatitude: 0,
-            RestaurantLongitude: 0,
             DeliveryAddress: new DeliveryAddressDto { Street = "A", City = "B", ContactPhoneNumber = "123" },
             Items: []);
 
@@ -180,13 +174,13 @@ public class ApplicationCommandHandlerTests
     public async Task AssignDeliveryPartnerCommandHandler_Should_Assign_Closest_Rider_And_Save_Atomically()
     {
         // Arrange
-        var address = new DeliveryAddress("Street", "City", "1212", "01700000000", 23.81, 90.41);
+        var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
         var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Pasta", new Money(12.00m, "USD"), 1);
         order.MarkAsPaid("TXN_1", new Money(14.00m, "USD"));
         order.StartPreparation();
 
-        var rider = new DeliveryPartner(Guid.NewGuid(), "Fast Rider", "+8801999999999", "Bike", 23.81, 90.41);
+        var rider = new DeliveryPartner(Guid.NewGuid(), "Fast Rider", "+8801999999999", "Bike");
 
         _mockOrderCommandService.Setup(s => s.GetOrderAsync(order.Id, It.IsAny<CancellationToken>())).ReturnsAsync(order);
         _mockOrderCommandService.Setup(s => s.GetAvailableDeliveryPartnersAsync(It.IsAny<CancellationToken>()))
