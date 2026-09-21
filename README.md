@@ -10,72 +10,48 @@ FoodMesh follows **Clean Architecture** and **CQRS**, strictly separating presen
 
 ```mermaid
 flowchart TD
-    subgraph Presentation["1. API Presentation Layer"]
-        Client["Client (Web / Mobile / Swagger UI)"]
-        Middleware["ExceptionHandlingMiddleware"]
-        Controllers["API Controllers (Orders, Payments, Deliveries, Restaurants)"]
-        Client -->|"HTTP Request"| Middleware
-        Middleware --> Controllers
+    Client(["Client (Web / Mobile / Swagger)"])
+
+    subgraph API["1. API Layer"]
+        Controllers["Controllers & Exception Middleware"]
     end
 
-    subgraph Application["2. Application & CQRS Layer"]
-        subgraph WriteSide["Write Pipeline (FoodMesh.Application)"]
-            Commands["Commands (User Intent)"]
-            Handlers["CommandHandlers (Orchestrators)"]
-            Researchers["CommandServices (Database Researchers)"]
-            Mappers["DataMappers (Translators)"]
-            Commands --> Handlers
-            Handlers -.->|"Precondition Checks"| Researchers
-            Handlers --> Mappers
-        end
+    Client <-->|"HTTP Requests / JSON"| Controllers
 
-        subgraph ReadSide["Read Pipeline (FoodMesh.Read)"]
-            Queries["Queries (Read Requests)"]
-            QHandlers["QueryHandlers (Direct Fast Projections)"]
-            ViewModels["ViewModels (UI-Ready Models)"]
-            Queries --> QHandlers
-            QHandlers --> ViewModels
-        end
+    subgraph WritePipeline["2. Write Pipeline (CQRS Commands)"]
+        Command["Command"]
+        MediatR_W["MediatR"]
+        Handler["CommandHandler"]
+        Service["CommandService (Researcher)"]
+        Domain["Domain Aggregate (Order)"]
+        UoW["Unit of Work"]
+
+        Command --> MediatR_W --> Handler
+        Handler -.->|"Checks Preconditions"| Service
+        Handler -->|"Enforces Business Rules"| Domain
+        Domain -->|"Saves Changes"| UoW
     end
 
-    subgraph Domain["3. Core Domain Layer (FoodMesh.Domain)"]
-        Aggregates["Aggregates (Order)"]
-        Entities["Entities (DeliveryPartner, RestaurantItem)"]
-        ValueObjects["Value Objects (Money, DeliveryAddress)"]
-        DomainServices["Domain Services (OrderFulfillment, DeliveryFee)"]
-        DomainEvents["Domain Events (OrderPlaced, OrderPaid)"]
-        Aggregates --> ValueObjects
-        Aggregates --> DomainEvents
+    subgraph ReadPipeline["3. Read Pipeline (CQRS Queries)"]
+        Query["Query"]
+        MediatR_R["MediatR"]
+        QHandler["QueryHandler"]
+        ViewModel["ViewModel (OrderDetails, Menu)"]
+
+        Query --> MediatR_R --> QHandler
+        QHandler -->|"Projects into"| ViewModel
     end
 
-    subgraph Infrastructure["4. Infrastructure Layer (FoodMesh.Infrastructure)"]
-        UoW["MongoUnitOfWork (IClientSessionHandle)"]
-        Repos["TransactionalRepository"]
-        BsonMaps["BsonClassMaps (MongoDB Serializers)"]
-        UoW --> Repos
-    end
+    Database[("MongoDB Database")]
 
-    subgraph Database["5. Database (MongoDB)"]
-        MongoDb[(MongoDB Database)]
-        OrdersColl["Orders Collection"]
-        PartnersColl["DeliveryPartners Collection"]
-        ItemsColl["RestaurantItems Collection"]
-        MongoDb --- OrdersColl
-        MongoDb --- PartnersColl
-        MongoDb --- ItemsColl
-    end
+    %% Routing
+    Controllers -->|"POST / PUT / DELETE"| Command
+    Controllers -->|"GET"| Query
+    ViewModel -->|"JSON Response"| Controllers
 
-    %% Cross-layer connections
-    Controllers -->|"POST / PUT / DELETE"| Commands
-    Controllers -->|"GET"| Queries
-
-    Handlers -->|"Executes Business Invariants"| Aggregates
-    Handlers -->|"Persists within ACID Transaction"| UoW
-    DomainServices --> Aggregates
-    DomainServices --> Entities
-
-    QHandlers -->|"Direct Read (No Change Tracking)"| MongoDb
-    Repos -->|"Transactional Writes"| MongoDb
+    %% Data access
+    UoW -->|"ACID Transaction"| Database
+    Database -.->|"Fast Direct Read"| QHandler
 ```
 
 ---
