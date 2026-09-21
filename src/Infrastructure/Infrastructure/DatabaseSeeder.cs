@@ -30,7 +30,7 @@ public static class DatabaseSeeder
                     BurgerBistroId,
                     "Classic Cheeseburger",
                     "Juicy beef patty with aged cheddar, lettuce, tomato, and special sauce.",
-                    Money.Create(12.99m, "USD"),
+                    new Money(12.99m, "USD"),
                     "Burgers",
                     true
                 ),
@@ -39,7 +39,7 @@ public static class DatabaseSeeder
                     BurgerBistroId,
                     "Smoky BBQ Bacon Burger",
                     "Grilled beef patty topped with smoked bacon, crispy onions, and tangy BBQ sauce.",
-                    Money.Create(14.50m, "USD"),
+                    new Money(14.50m, "USD"),
                     "Burgers",
                     true
                 ),
@@ -48,7 +48,7 @@ public static class DatabaseSeeder
                     BurgerBistroId,
                     "Crispy French Fries",
                     "Golden, crunchy salted fries with garlic mayo dip.",
-                    Money.Create(4.50m, "USD"),
+                    new Money(4.50m, "USD"),
                     "Sides",
                     true
                 ),
@@ -59,7 +59,7 @@ public static class DatabaseSeeder
                     PizzaPalaceId,
                     "Margherita Pizza",
                     "Classic sourdough base with San Marzano tomatoes, fresh mozzarella, and basil.",
-                    Money.Create(15.00m, "USD"),
+                    new Money(15.00m, "USD"),
                     "Pizza",
                     true
                 ),
@@ -68,7 +68,7 @@ public static class DatabaseSeeder
                     PizzaPalaceId,
                     "Pepperoni Feast",
                     "Loaded with artisanal beef pepperoni and melted mozzarella cheese.",
-                    Money.Create(18.50m, "USD"),
+                    new Money(18.50m, "USD"),
                     "Pizza",
                     true
                 ),
@@ -77,7 +77,7 @@ public static class DatabaseSeeder
                     PizzaPalaceId,
                     "Cheesy Garlic Bread",
                     "Toasted baguette brushed with garlic butter and melted mozzarella.",
-                    Money.Create(5.50m, "USD"),
+                    new Money(5.50m, "USD"),
                     "Sides",
                     true
                 )
