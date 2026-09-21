@@ -4,6 +4,78 @@ A robust, enterprise-grade food delivery backend built with **.NET 8**, **Clean 
 
 ---
 
+## System Architecture Overview
+
+FoodMesh follows **Clean Architecture** and **CQRS**, strictly separating presentation, orchestration, core domain logic, and persistence.
+
+```mermaid
+graph TB
+    subgraph Presentation["1. API Presentation Layer (FoodMesh.BusinessApiService)"]
+        Client["Client (Web / Mobile / Swagger UI)"]
+        Middleware["ExceptionHandlingMiddleware"]
+        Controllers["API Controllers<br/>(Orders, Payments, Deliveries, Restaurants)"]
+        Client -->|HTTP Request| Middleware
+        Middleware --> Controllers
+    end
+
+    subgraph Application["2. Application & CQRS Layer"]
+        subgraph WriteSide["Write Pipeline (FoodMesh.Application)"]
+            Commands["Commands (User Intent)"]
+            Handlers["CommandHandlers (Orchestrators)"]
+            Researchers["CommandServices (Database Researchers)"]
+            Mappers["DataMappers (Translators)"]
+            Commands --> Handlers
+            Handlers -.->|Precondition Checks| Researchers
+            Handlers --> Mappers
+        end
+
+        subgraph ReadSide["Read Pipeline (FoodMesh.Read)"]
+            Queries["Queries (Read Requests)"]
+            QHandlers["QueryHandlers (Direct Fast Projections)"]
+            ViewModels["ViewModels (UI-Ready Models)"]
+            Queries --> QHandlers
+            QHandlers --> ViewModels
+        end
+    end
+
+    subgraph Domain["3. Core Domain Layer (FoodMesh.Domain)"]
+        Aggregates["Aggregates<br/>(Order)"]
+        Entities["Entities<br/>(DeliveryPartner, RestaurantItem)"]
+        ValueObjects["Value Objects<br/>(Money, DeliveryAddress)"]
+        DomainServices["Domain Services<br/>(OrderFulfillment, DeliveryFee)"]
+        DomainEvents["Domain Events<br/>(OrderPlaced, OrderPaid)"]
+        Aggregates --> ValueObjects
+        Aggregates --> DomainEvents
+    end
+
+    subgraph Infrastructure["4. Infrastructure Layer (FoodMesh.Infrastructure)"]
+        UoW["MongoUnitOfWork<br/>(IClientSessionHandle)"]
+        Repos["TransactionalRepository&lt;T&gt;"]
+        BsonMaps["BsonClassMaps<br/>(MongoDB Serializers)"]
+        UoW --> Repos
+    end
+
+    subgraph Database["5. Database (MongoDB)"]
+        MongoOrders[("Orders Collection")]
+        MongoPartners[("DeliveryPartners Collection")]
+        MongoItems[("RestaurantItems Collection")]
+    end
+
+    %% Inter-layer relationships
+    Controllers -->|POST / PUT / DELETE| Commands
+    Controllers -->|GET| Queries
+
+    Handlers -->|Executes Business Invariants| Aggregates
+    Handlers -->|Persists within ACID Transaction| UoW
+    DomainServices --> Aggregates
+    DomainServices --> Entities
+
+    QHandlers ==>|Direct Read (No Change Tracking)| Database
+    Repos -->|Transactional Writes| Database
+```
+
+---
+
 ## Architecture: CQRS Request Flows
 
 In FoodMesh, the **Write** side (state changes, business rules, multi-document transactions) and the **Read** side (fast projections directly into UI-ready ViewModels) are completely segregated.
