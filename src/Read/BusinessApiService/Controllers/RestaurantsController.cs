@@ -19,4 +19,15 @@ public sealed class RestaurantsController : BaseApiController
         var result = await Mediator.Send(new GetAvailableRestaurantsQuery());
         return HandleResult(result);
     }
+
+    /// <summary>
+    /// Gets all available menu items for a specific restaurant.
+    /// </summary>
+    [HttpGet("{restaurantId:guid}/menu")]
+    [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<MenuItemViewModel>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRestaurantMenu(Guid restaurantId)
+    {
+        var result = await Mediator.Send(new GetRestaurantMenuQuery(restaurantId));
+        return HandleResult(result);
+    }
 }

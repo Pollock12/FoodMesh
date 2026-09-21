@@ -130,6 +130,33 @@ public class ApiControllerTests
         response.Data.Should().Be(partnerId);
     }
 
+    [Fact]
+    public async Task RestaurantsController_GetRestaurantMenu_Should_Return_Ok_With_Items()
+    {
+        // Arrange
+        var restaurantId = Guid.NewGuid();
+        var menuItems = new List<MenuItemViewModel>
+        {
+            new() { MenuItemId = Guid.NewGuid(), RestaurantId = restaurantId, Name = "Pizza", Price = 12.50m, Category = "Food" }
+        };
+
+        _mockMediator
+            .Setup(m => m.Send(It.Is<GetRestaurantMenuQuery>(q => q.RestaurantId == restaurantId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<IReadOnlyList<MenuItemViewModel>>.Success(menuItems));
+
+        var controller = SetupController(new RestaurantsController());
+
+        // Act
+        var result = await controller.GetRestaurantMenu(restaurantId);
+
+        // Assert
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var response = okResult.Value.Should().BeOfType<ApiResponse<IReadOnlyList<MenuItemViewModel>>>().Subject;
+        response.Success.Should().BeTrue();
+        response.Data.Should().HaveCount(1);
+        response.Data!.First().Name.Should().Be("Pizza");
+    }
+
 
     [Fact]
     public async Task ExceptionHandlingMiddleware_Should_Catch_DomainException_And_Return_BadRequest()
