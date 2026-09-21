@@ -49,13 +49,15 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "FoodMesh API v1");
-    c.RoutePrefix = string.Empty; // Serve Swagger UI at application root (http://localhost:5000/)
 });
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// Redirect root URL "/" to "/swagger" so both URLs work seamlessly (excluded from Swagger UI)
+app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
 app.Run();
 
