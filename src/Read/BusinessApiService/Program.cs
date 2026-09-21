@@ -66,6 +66,13 @@ app.MapControllers();
 // Redirect root URL "/" to "/swagger" so both URLs work seamlessly (excluded from Swagger UI)
 app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
+// 6. Seed initial restaurants, menus, and riders if database is fresh
+using (var scope = app.Services.CreateScope())
+{
+    var database = scope.ServiceProvider.GetRequiredService<MongoDB.Driver.IMongoDatabase>();
+    await DatabaseSeeder.SeedAsync(database);
+}
+
 app.Run();
 
 // Partial program class for WebApplicationFactory testing

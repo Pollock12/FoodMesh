@@ -25,12 +25,23 @@ public sealed class GetAvailableRestaurantsQueryHandler : IRequestHandler<GetAva
 
         var summaries = activeItems
             .GroupBy(i => i.RestaurantId)
-            .Select(g => new RestaurantSummaryViewModel
+            .Select(g =>
             {
-                RestaurantId = g.Key,
-                RestaurantName = $"Restaurant {g.Key.ToString()[..8]}",
-                Cuisine = g.FirstOrDefault()?.Category ?? "Various",
-                AvailableItemCount = g.Count()
+                var firstItem = g.FirstOrDefault();
+                string name = g.Key.ToString() switch
+                {
+                    "11111111-1111-1111-1111-111111111111" => "Burger Bistro",
+                    "22222222-2222-2222-2222-222222222222" => "Pizza Palace",
+                    _ => $"Restaurant {g.Key.ToString()[..8]}"
+                };
+
+                return new RestaurantSummaryViewModel
+                {
+                    RestaurantId = g.Key,
+                    RestaurantName = name,
+                    Cuisine = firstItem?.Category ?? "Various",
+                    AvailableItemCount = g.Count()
+                };
             })
             .ToList();
 
