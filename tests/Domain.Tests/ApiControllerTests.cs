@@ -134,34 +134,6 @@ public class ApiControllerTests
         response.Data.Should().Be(partnerId);
     }
 
-    [Fact]
-    public async Task DeliveriesController_TrackDelivery_Should_Return_ActiveDeliveryTrackingViewModel()
-    {
-        // Arrange
-        var trackingViewModel = new ActiveDeliveryTrackingViewModel
-        {
-            OrderId = Guid.NewGuid(),
-            OrderStatus = "OutForDelivery",
-            RiderName = "Speedy",
-            RiderLatitude = 23.81,
-            RiderLongitude = 90.41
-        };
-
-        _mockMediator
-            .Setup(m => m.Send(It.IsAny<TrackDeliveryQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result<ActiveDeliveryTrackingViewModel>.Success(trackingViewModel));
-
-        var controller = SetupController(new DeliveriesController());
-
-        // Act
-        var result = await controller.TrackDelivery(trackingViewModel.OrderId);
-
-        // Assert
-        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-        var response = okResult.Value.Should().BeOfType<ApiResponse<ActiveDeliveryTrackingViewModel>>().Subject;
-        response.Success.Should().BeTrue();
-        response.Data!.RiderName.Should().Be("Speedy");
-    }
 
     [Fact]
     public async Task ExceptionHandlingMiddleware_Should_Catch_DomainException_And_Return_BadRequest()

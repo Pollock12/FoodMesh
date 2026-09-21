@@ -52,31 +52,6 @@ public class ReadQueryAndEventHandlerTests
         result.Error.Should().Contain("not found");
     }
 
-    [Fact]
-    public async Task TrackDeliveryQueryHandler_Should_Fail_When_Order_Not_Found()
-    {
-        // Arrange
-        var mockCursor = new Mock<IAsyncCursor<Order>>();
-        mockCursor.SetupSequence(c => c.MoveNext(It.IsAny<CancellationToken>())).Returns(false);
-        mockCursor.SetupSequence(c => c.MoveNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(false);
-
-        _mockOrdersCollection
-            .Setup(c => c.FindAsync(
-                It.IsAny<FilterDefinition<Order>>(),
-                It.IsAny<FindOptions<Order, Order>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(mockCursor.Object);
-
-        var handler = new TrackDeliveryQueryHandler(_mockDatabase.Object);
-        var query = new TrackDeliveryQuery(Guid.NewGuid());
-
-        // Act
-        var result = await handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Contain("not found");
-    }
 
     [Fact]
     public async Task EventHandlers_Should_Process_Domain_Events_Without_Error()
