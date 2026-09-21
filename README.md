@@ -226,3 +226,22 @@ Open **`http://localhost:5000`** in your browser to view the interactive Swagger
 dotnet test FoodMesh.sln
 ```
 All unit and integration tests across all layers will execute and pass.
+
+---
+
+## 🚀 Live Cloud Deployment
+
+### 1. Database (MongoDB Atlas)
+1. Create a free **M0 cluster** at [MongoDB Atlas](https://www.mongodb.com/atlas).
+2. Under **Network Access**, allow `0.0.0.0/0`.
+3. Under **Database Access**, create a user and copy your connection string:
+   `mongodb+srv://<user>:<password>@cluster0.mongodb.net/FoodMeshDb?retryWrites=true&w=majority`
+
+### 2. Deploy via Render (1-Click via Docker)
+1. Push this repository to GitHub.
+2. Log in to [Render.com](https://render.com/) and click **New + > Web Service**.
+3. Select your `FoodMesh` repository (Render will detect the included `Dockerfile` and `render.yaml`).
+4. Set the Environment Variable:
+   - `MongoDbSettings__ConnectionString`: `<your_atlas_connection_string>`
+5. Click **Create Web Service**. Your live Swagger UI will be available at:
+   `https://<your-service-name>.onrender.com/swagger`

@@ -5,6 +5,13 @@ using FoodMesh.Read;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Cloud deployment: Bind to PORT environment variable if provided by host (e.g. Render, Railway)
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(port))
+{
+    builder.WebHost.UseUrls($"http://*:{port}");
+}
+
 // 1. Register Controllers & JSON formatting
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
