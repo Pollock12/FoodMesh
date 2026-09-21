@@ -26,7 +26,7 @@ public sealed class DeliveriesController : BaseApiController
     /// Tracks live delivery coordinates and status for an order.
     /// </summary>
     [HttpGet("{orderId:guid}/track")]
-    [ProducesResponseType(typeof(ApiResponse<ActiveDeliveryTrackingDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<ActiveDeliveryTrackingViewModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> TrackDelivery(Guid orderId)
     {

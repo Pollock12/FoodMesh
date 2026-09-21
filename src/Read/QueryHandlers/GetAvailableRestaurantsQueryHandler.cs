@@ -6,7 +6,7 @@ using MongoDB.Driver;
 
 namespace FoodMesh.Read.QueryHandlers;
 
-public sealed class GetAvailableRestaurantsQueryHandler : IRequestHandler<GetAvailableRestaurantsQuery, Result<IReadOnlyList<RestaurantSummaryDto>>>
+public sealed class GetAvailableRestaurantsQueryHandler : IRequestHandler<GetAvailableRestaurantsQuery, Result<IReadOnlyList<RestaurantSummaryViewModel>>>
 {
     private readonly IMongoDatabase _database;
 
@@ -15,7 +15,7 @@ public sealed class GetAvailableRestaurantsQueryHandler : IRequestHandler<GetAva
         _database = database ?? throw new ArgumentNullException(nameof(database));
     }
 
-    public async Task<Result<IReadOnlyList<RestaurantSummaryDto>>> Handle(GetAvailableRestaurantsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IReadOnlyList<RestaurantSummaryViewModel>>> Handle(GetAvailableRestaurantsQuery request, CancellationToken cancellationToken)
     {
         var itemsCollection = _database.GetCollection<RestaurantItem>("RestaurantItems");
 
@@ -25,7 +25,7 @@ public sealed class GetAvailableRestaurantsQueryHandler : IRequestHandler<GetAva
 
         var summaries = activeItems
             .GroupBy(i => i.RestaurantId)
-            .Select(g => new RestaurantSummaryDto
+            .Select(g => new RestaurantSummaryViewModel
             {
                 RestaurantId = g.Key,
                 RestaurantName = $"Restaurant {g.Key.ToString()[..8]}",
@@ -36,6 +36,6 @@ public sealed class GetAvailableRestaurantsQueryHandler : IRequestHandler<GetAva
             })
             .ToList();
 
-        return Result<IReadOnlyList<RestaurantSummaryDto>>.Success(summaries);
+        return Result<IReadOnlyList<RestaurantSummaryViewModel>>.Success(summaries);
     }
 }

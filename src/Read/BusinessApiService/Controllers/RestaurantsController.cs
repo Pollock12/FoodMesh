@@ -13,7 +13,7 @@ public sealed class RestaurantsController : BaseApiController
     /// Gets a list of active restaurants with available menu counts.
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<RestaurantSummaryDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<RestaurantSummaryViewModel>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRestaurants()
     {
         var result = await Mediator.Send(new GetAvailableRestaurantsQuery());

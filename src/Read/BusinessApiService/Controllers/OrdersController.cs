@@ -31,7 +31,7 @@ public sealed class OrdersController : BaseApiController
     /// Gets complete order details and current status by OrderId.
     /// </summary>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(ApiResponse<OrderDetailsDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<OrderDetailsViewModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOrderById(Guid id)
     {
@@ -43,7 +43,7 @@ public sealed class OrdersController : BaseApiController
     /// Gets paginated order history for a specific customer.
     /// </summary>
     [HttpGet("customer/{customerId:guid}")]
-    [ProducesResponseType(typeof(ApiResponse<PagedResult<OrderSummaryDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<PagedResult<OrderSummaryViewModel>>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetCustomerOrders(
         Guid customerId,

@@ -3,7 +3,7 @@ namespace FoodMesh.Read.ViewModels;
 /// <summary>
 /// Read-optimized ViewModel for an individual order item on the order details screen.
 /// </summary>
-public sealed class OrderItemDetailsDto
+public sealed class OrderItemDetailsViewModel
 {
     public Guid MenuItemId { get; set; }
     public string ItemName { get; set; } = string.Empty;

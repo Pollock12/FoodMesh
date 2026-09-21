@@ -7,7 +7,7 @@ using MongoDB.Driver;
 
 namespace FoodMesh.Read.QueryHandlers;
 
-public sealed class GetCustomerOrdersQueryHandler : IRequestHandler<GetCustomerOrdersQuery, Result<PagedResult<OrderSummaryDto>>>
+public sealed class GetCustomerOrdersQueryHandler : IRequestHandler<GetCustomerOrdersQuery, Result<PagedResult<OrderSummaryViewModel>>>
 {
     private readonly IMongoDatabase _database;
 
@@ -16,7 +16,7 @@ public sealed class GetCustomerOrdersQueryHandler : IRequestHandler<GetCustomerO
         _database = database ?? throw new ArgumentNullException(nameof(database));
     }
 
-    public async Task<Result<PagedResult<OrderSummaryDto>>> Handle(GetCustomerOrdersQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<OrderSummaryViewModel>>> Handle(GetCustomerOrdersQuery request, CancellationToken cancellationToken)
     {
         var page = request.PageNumber <= 0 ? 1 : request.PageNumber;
         var pageSize = request.PageSize <= 0 ? 10 : Math.Min(request.PageSize, 50);
@@ -33,7 +33,7 @@ public sealed class GetCustomerOrdersQueryHandler : IRequestHandler<GetCustomerO
             .Limit(pageSize)
             .ToListAsync(cancellationToken);
 
-        var items = orders.Select(o => new OrderSummaryDto
+        var items = orders.Select(o => new OrderSummaryViewModel
         {
             OrderId = o.Id,
             CustomerId = o.CustomerId,
@@ -45,7 +45,7 @@ public sealed class GetCustomerOrdersQueryHandler : IRequestHandler<GetCustomerO
             PlacedAtUtc = o.PlacedAtUtc
         }).ToList();
 
-        var pagedResult = new PagedResult<OrderSummaryDto>(items, page, pageSize, totalCount);
-        return Result<PagedResult<OrderSummaryDto>>.Success(pagedResult);
+        var pagedResult = new PagedResult<OrderSummaryViewModel>(items, page, pageSize, totalCount);
+        return Result<PagedResult<OrderSummaryViewModel>>.Success(pagedResult);
     }
 }

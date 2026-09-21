@@ -135,10 +135,10 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task DeliveriesController_TrackDelivery_Should_Return_ActiveDeliveryTrackingDto()
+    public async Task DeliveriesController_TrackDelivery_Should_Return_ActiveDeliveryTrackingViewModel()
     {
         // Arrange
-        var trackingDto = new ActiveDeliveryTrackingDto
+        var trackingViewModel = new ActiveDeliveryTrackingViewModel
         {
             OrderId = Guid.NewGuid(),
             OrderStatus = "OutForDelivery",
@@ -149,16 +149,16 @@ public class ApiControllerTests
 
         _mockMediator
             .Setup(m => m.Send(It.IsAny<TrackDeliveryQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result<ActiveDeliveryTrackingDto>.Success(trackingDto));
+            .ReturnsAsync(Result<ActiveDeliveryTrackingViewModel>.Success(trackingViewModel));
 
         var controller = SetupController(new DeliveriesController());
 
         // Act
-        var result = await controller.TrackDelivery(trackingDto.OrderId);
+        var result = await controller.TrackDelivery(trackingViewModel.OrderId);
 
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-        var response = okResult.Value.Should().BeOfType<ApiResponse<ActiveDeliveryTrackingDto>>().Subject;
+        var response = okResult.Value.Should().BeOfType<ApiResponse<ActiveDeliveryTrackingViewModel>>().Subject;
         response.Success.Should().BeTrue();
         response.Data!.RiderName.Should().Be("Speedy");
     }

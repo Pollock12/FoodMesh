@@ -11,4 +11,4 @@ namespace FoodMesh.Read.QueryHandlers;
 public sealed record GetCustomerOrdersQuery(
     Guid CustomerId,
     int PageNumber = 1,
-    int PageSize = 10) : IRequest<Result<PagedResult<OrderSummaryDto>>>;
+    int PageSize = 10) : IRequest<Result<PagedResult<OrderSummaryViewModel>>>;

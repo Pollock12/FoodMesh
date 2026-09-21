@@ -7,7 +7,7 @@ using MongoDB.Driver;
 
 namespace FoodMesh.Read.QueryHandlers;
 
-public sealed class TrackDeliveryQueryHandler : IRequestHandler<TrackDeliveryQuery, Result<ActiveDeliveryTrackingDto>>
+public sealed class TrackDeliveryQueryHandler : IRequestHandler<TrackDeliveryQuery, Result<ActiveDeliveryTrackingViewModel>>
 {
     private readonly IMongoDatabase _database;
 
@@ -16,7 +16,7 @@ public sealed class TrackDeliveryQueryHandler : IRequestHandler<TrackDeliveryQue
         _database = database ?? throw new ArgumentNullException(nameof(database));
     }
 
-    public async Task<Result<ActiveDeliveryTrackingDto>> Handle(TrackDeliveryQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ActiveDeliveryTrackingViewModel>> Handle(TrackDeliveryQuery request, CancellationToken cancellationToken)
     {
         var ordersCollection = _database.GetCollection<Order>("Orders");
         var order = await ordersCollection
@@ -24,7 +24,7 @@ public sealed class TrackDeliveryQueryHandler : IRequestHandler<TrackDeliveryQue
             .FirstOrDefaultAsync(cancellationToken);
 
         if (order is null)
-            return Result<ActiveDeliveryTrackingDto>.Failure($"Order with ID '{request.OrderId}' not found.");
+            return Result<ActiveDeliveryTrackingViewModel>.Failure($"Order with ID '{request.OrderId}' not found.");
 
         DeliveryPartner? rider = null;
         if (order.AssignedDeliveryPartnerId.HasValue)
@@ -35,7 +35,7 @@ public sealed class TrackDeliveryQueryHandler : IRequestHandler<TrackDeliveryQue
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        var trackingDto = new ActiveDeliveryTrackingDto
+        var trackingViewModel = new ActiveDeliveryTrackingViewModel
         {
             OrderId = order.Id,
             OrderStatus = order.Status.ToString(),
@@ -51,6 +51,6 @@ public sealed class TrackDeliveryQueryHandler : IRequestHandler<TrackDeliveryQue
             LastUpdatedUtc = rider?.UpdatedAtUtc ?? order.UpdatedAtUtc ?? order.PlacedAtUtc
         };
 
-        return Result<ActiveDeliveryTrackingDto>.Success(trackingDto);
+        return Result<ActiveDeliveryTrackingViewModel>.Success(trackingViewModel);
     }
 }

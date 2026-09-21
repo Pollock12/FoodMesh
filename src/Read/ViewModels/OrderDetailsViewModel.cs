@@ -3,7 +3,7 @@ namespace FoodMesh.Read.ViewModels;
 /// <summary>
 /// Read-optimized ViewModel containing complete information for an Order detail view.
 /// </summary>
-public sealed class OrderDetailsDto
+public sealed class OrderDetailsViewModel
 {
     public Guid OrderId { get; set; }
     public Guid CustomerId { get; set; }
@@ -26,7 +26,7 @@ public sealed class OrderDetailsDto
     public decimal TotalAmount { get; set; }
     public string Currency { get; set; } = "USD";
 
-    public List<OrderItemDetailsDto> Items { get; set; } = [];
+    public List<OrderItemDetailsViewModel> Items { get; set; } = [];
 
     public DateTime PlacedAtUtc { get; set; }
     public DateTime? PaidAtUtc { get; set; }

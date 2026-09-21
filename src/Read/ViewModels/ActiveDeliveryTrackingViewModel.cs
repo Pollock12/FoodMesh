@@ -3,7 +3,7 @@ namespace FoodMesh.Read.ViewModels;
 /// <summary>
 /// Read-optimized ViewModel for live GPS rider tracking and delivery status.
 /// </summary>
-public sealed class ActiveDeliveryTrackingDto
+public sealed class ActiveDeliveryTrackingViewModel
 {
     public Guid OrderId { get; set; }
     public string OrderStatus { get; set; } = string.Empty;

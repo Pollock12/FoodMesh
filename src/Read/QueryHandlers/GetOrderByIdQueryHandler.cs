@@ -11,7 +11,7 @@ namespace FoodMesh.Read.QueryHandlers;
 /// Fast CQRS query handler reading directly from MongoDB collections into ViewModels.
 /// Bypasses domain aggregate write behavior for high read performance.
 /// </summary>
-public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Result<OrderDetailsDto>>
+public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Result<OrderDetailsViewModel>>
 {
     private readonly IMongoDatabase _database;
 
@@ -20,7 +20,7 @@ public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery
         _database = database ?? throw new ArgumentNullException(nameof(database));
     }
 
-    public async Task<Result<OrderDetailsDto>> Handle(GetOrderByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<OrderDetailsViewModel>> Handle(GetOrderByIdQuery request, CancellationToken cancellationToken)
     {
         var ordersCollection = _database.GetCollection<Order>("Orders");
         var order = await ordersCollection
@@ -28,7 +28,7 @@ public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery
             .FirstOrDefaultAsync(cancellationToken);
 
         if (order is null)
-            return Result<OrderDetailsDto>.Failure($"Order with ID '{request.OrderId}' not found.");
+            return Result<OrderDetailsViewModel>.Failure($"Order with ID '{request.OrderId}' not found.");
 
         string? partnerName = null;
         if (order.AssignedDeliveryPartnerId.HasValue)
@@ -41,7 +41,7 @@ public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery
             partnerName = partner?.FullName;
         }
 
-        var dto = new OrderDetailsDto
+        var viewModel = new OrderDetailsViewModel
         {
             OrderId = order.Id,
             CustomerId = order.CustomerId,
@@ -65,7 +65,7 @@ public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery
             PaidAtUtc = order.PaidAtUtc,
             DeliveredAtUtc = order.DeliveredAtUtc,
             CancellationReason = order.CancellationReason,
-            Items = order.Items.Select(i => new OrderItemDetailsDto
+            Items = order.Items.Select(i => new OrderItemDetailsViewModel
             {
                 MenuItemId = i.MenuItemId,
                 ItemName = i.ItemName,
@@ -75,6 +75,6 @@ public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery
             }).ToList()
         };
 
-        return Result<OrderDetailsDto>.Success(dto);
+        return Result<OrderDetailsViewModel>.Success(viewModel);
     }
 }

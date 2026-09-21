@@ -3,7 +3,7 @@ namespace FoodMesh.Read.ViewModels;
 /// <summary>
 /// Lightweight ViewModel for customer order history and listing views.
 /// </summary>
-public sealed class OrderSummaryDto
+public sealed class OrderSummaryViewModel
 {
     public Guid OrderId { get; set; }
     public Guid CustomerId { get; set; }

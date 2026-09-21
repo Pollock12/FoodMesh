@@ -7,4 +7,4 @@ namespace FoodMesh.Read.QueryHandlers;
 /// <summary>
 /// Query to fetch available restaurants and catalog counts.
 /// </summary>
-public sealed record GetAvailableRestaurantsQuery : IRequest<Result<IReadOnlyList<RestaurantSummaryDto>>>;
+public sealed record GetAvailableRestaurantsQuery : IRequest<Result<IReadOnlyList<RestaurantSummaryViewModel>>>;
