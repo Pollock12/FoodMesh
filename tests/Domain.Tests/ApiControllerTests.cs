@@ -109,25 +109,63 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task DeliveriesController_AssignDeliveryPartner_Should_Return_Ok_With_PartnerId()
+    public async Task OrdersController_StartCooking_Should_Return_Ok()
     {
         // Arrange
-        var partnerId = Guid.NewGuid();
+        var orderId = Guid.NewGuid();
         _mockMediator
-            .Setup(m => m.Send(It.IsAny<AssignDeliveryPartnerCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result<Guid>.Success(partnerId));
+            .Setup(m => m.Send(It.Is<StartCookingCommand>(c => c.OrderId == orderId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<bool>.Success(true));
 
-        var controller = SetupController(new DeliveriesController());
-        var command = new AssignDeliveryPartnerCommand(Guid.NewGuid());
+        var controller = SetupController(new OrdersController());
 
         // Act
-        var result = await controller.AssignDeliveryPartner(command);
+        var result = await controller.StartCooking(orderId);
 
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-        var response = okResult.Value.Should().BeOfType<ApiResponse<Guid>>().Subject;
+        var response = okResult.Value.Should().BeOfType<ApiResponse<bool>>().Subject;
         response.Success.Should().BeTrue();
-        response.Data.Should().Be(partnerId);
+    }
+
+    [Fact]
+    public async Task OrdersController_DispatchDelivery_Should_Return_Ok()
+    {
+        // Arrange
+        var orderId = Guid.NewGuid();
+        _mockMediator
+            .Setup(m => m.Send(It.Is<DispatchDeliveryCommand>(c => c.OrderId == orderId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<bool>.Success(true));
+
+        var controller = SetupController(new OrdersController());
+
+        // Act
+        var result = await controller.DispatchDelivery(orderId);
+
+        // Assert
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var response = okResult.Value.Should().BeOfType<ApiResponse<bool>>().Subject;
+        response.Success.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task OrdersController_CompleteDelivery_Should_Return_Ok()
+    {
+        // Arrange
+        var orderId = Guid.NewGuid();
+        _mockMediator
+            .Setup(m => m.Send(It.Is<CompleteDeliveryCommand>(c => c.OrderId == orderId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<bool>.Success(true));
+
+        var controller = SetupController(new OrdersController());
+
+        // Act
+        var result = await controller.CompleteDelivery(orderId);
+
+        // Assert
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var response = okResult.Value.Should().BeOfType<ApiResponse<bool>>().Subject;
+        response.Success.Should().BeTrue();
     }
 
     [Fact]

@@ -7,13 +7,13 @@ public sealed class NotificationCommandService : INotificationCommandService
 {
     public Task NotifyCustomerAsync(Guid customerId, string title, string message, CancellationToken cancellationToken = default)
     {
-        // In a real production system, this sends an FCM push notification, Twilio SMS, or SendGrid email.
+        // In production, sends real-time updates via SignalR, FCM push notification, or SMS.
         return Task.CompletedTask;
     }
 
-    public Task NotifyRiderAsync(Guid riderId, string title, string message, CancellationToken cancellationToken = default)
+    public Task NotifyKitchenAsync(string title, string message, CancellationToken cancellationToken = default)
     {
-        // In a real production system, this notifies the rider via WebSocket / Rider App push notification.
+        // In production, notifies the restaurant kitchen dashboard or sound alert.
         return Task.CompletedTask;
     }
 }

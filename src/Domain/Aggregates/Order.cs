@@ -25,6 +25,8 @@ public sealed class Order : AggregateRoot<Guid>
 
     public DateTime PlacedAtUtc { get; private set; }
     public DateTime? PaidAtUtc { get; private set; }
+    public DateTime? CookingStartedAtUtc { get; private set; }
+    public DateTime? DispatchedAtUtc { get; private set; }
     public DateTime? DeliveredAtUtc { get; private set; }
 
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
@@ -164,28 +166,35 @@ public sealed class Order : AggregateRoot<Guid>
     }
 
     /// <summary>
-    /// Updates order status to Preparing when the restaurant begins preparing the food.
+    /// Updates order status to Cooking when the chef begins cooking the meal.
     /// </summary>
     public void StartPreparation()
     {
         if (Status != OrderStatus.Paid)
             throw new DomainException("Order must be paid before preparation starts.", "ORDER_NOT_PAID");
 
-        Status = OrderStatus.Preparing;
+        Status = OrderStatus.Cooking;
+        CookingStartedAtUtc = DateTime.UtcNow;
         UpdatedAtUtc = DateTime.UtcNow;
 
-        AddDomainEvent(new OrderPreparedDomainEvent(Id, DateTime.UtcNow));
+        AddDomainEvent(new OrderCookingStartedDomainEvent(Id, CookingStartedAtUtc.Value));
     }
 
     /// <summary>
-    /// Assigns a delivery rider to this order.
+    /// Chef begins cooking the meal in the restaurant kitchen.
+    /// </summary>
+    public void StartCooking() => StartPreparation();
+
+    /// <summary>
+    /// Assigns a delivery rider to this order (optional / legacy compatibility).
+    /// In this self-operated model, the owner delivers directly.
     /// </summary>
     public void AssignDeliveryPartner(Guid deliveryPartnerId)
     {
         if (deliveryPartnerId == Guid.Empty)
             throw new DomainException("Delivery partner ID cannot be empty.", "INVALID_PARTNER");
 
-        if (Status != OrderStatus.Paid && Status != OrderStatus.Preparing && Status != OrderStatus.ReadyForPickup)
+        if (Status != OrderStatus.PendingPayment && Status != OrderStatus.Paid && Status != OrderStatus.Cooking)
             throw new DomainException($"Cannot assign delivery partner for order in '{Status}' state.", "INVALID_STATE");
 
         AssignedDeliveryPartnerId = deliveryPartnerId;
@@ -195,24 +204,23 @@ public sealed class Order : AggregateRoot<Guid>
     }
 
     /// <summary>
-    /// Marks the order as out for delivery once the rider picks it up.
+    /// Marks the order as out for delivery when the owner departs with the food.
+    /// No third-party rider assignment is required.
     /// </summary>
     public void DispatchForDelivery()
     {
-        if (!AssignedDeliveryPartnerId.HasValue)
-            throw new DomainException("Cannot dispatch order without an assigned delivery partner.", "NO_RIDER_ASSIGNED");
-
-        if (Status != OrderStatus.Preparing && Status != OrderStatus.ReadyForPickup && Status != OrderStatus.Paid)
+        if (Status != OrderStatus.Cooking && Status != OrderStatus.Paid)
             throw new DomainException($"Cannot dispatch order in '{Status}' state.", "INVALID_STATE");
 
         Status = OrderStatus.OutForDelivery;
+        DispatchedAtUtc = DateTime.UtcNow;
         UpdatedAtUtc = DateTime.UtcNow;
 
-        AddDomainEvent(new OrderOutForDeliveryDomainEvent(Id, AssignedDeliveryPartnerId.Value, DateTime.UtcNow));
+        AddDomainEvent(new OrderOutForDeliveryDomainEvent(Id, DispatchedAtUtc.Value));
     }
 
     /// <summary>
-    /// Marks the order as delivered once the rider reaches the customer.
+    /// Marks the order as delivered once the food reaches the customer's doorstep.
     /// </summary>
     public void MarkDelivered()
     {
@@ -227,7 +235,9 @@ public sealed class Order : AggregateRoot<Guid>
     }
 
     /// <summary>
-    /// Cancels the order if it has not yet been delivered.
+    /// Cancels the order.
+    /// Business Rule: Customer can ONLY cancel BEFORE payment (while in PendingPayment).
+    /// Once payment is completed, orders cannot be cancelled.
     /// </summary>
     public void Cancel(string reason)
     {
@@ -236,6 +246,9 @@ public sealed class Order : AggregateRoot<Guid>
 
         if (Status == OrderStatus.Cancelled)
             throw new DomainException("Order is already cancelled.", "ORDER_ALREADY_CANCELLED");
+
+        if (Status != OrderStatus.PendingPayment || PaymentStatus == PaymentStatus.Completed)
+            throw new DomainException("Cannot cancel an order once payment has been completed.", "ORDER_CANNOT_BE_CANCELLED_AFTER_PAYMENT");
 
         Status = OrderStatus.Cancelled;
         CancellationReason = string.IsNullOrWhiteSpace(reason) ? "No reason specified" : reason.Trim();

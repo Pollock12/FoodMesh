@@ -11,7 +11,7 @@ namespace FoodMesh.Application.CommandHandlers;
 /// Command handler orchestrating the processing of payment for an order.
 /// 1. Asks CommandService to look up the order.
 /// 2. Delegates charge to PaymentGatewayClientService.
-/// 3. Mutates Order aggregate to Paid/Preparing.
+/// 3. Mutates Order aggregate to Paid.
 /// 4. Persists changes and notifies customer.
 /// </summary>
 public sealed class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymentCommand, Result<string>>
@@ -57,26 +57,31 @@ public sealed class ProcessPaymentCommandHandler : IRequestHandler<ProcessPaymen
 
             var transactionId = paymentResult.TransactionId!;
 
-            // 3. Update Domain Aggregate state
+            // 3. Update Domain Aggregate state to Paid
             order.MarkAsPaid(transactionId, order.TotalAmount);
-            order.StartPreparation();
 
             // 4. Save order to MongoDB
             var orderRepo = _unitOfWork.GetRepository<Order>();
             await orderRepo.UpdateAsync(order, cancellationToken);
 
-            // 5. Publish domain events (OrderPaidDomainEvent, OrderPreparedDomainEvent)
+            // 5. Publish domain events (OrderPaidDomainEvent)
             foreach (var domainEvent in order.DomainEvents)
             {
                 await _publisher.Publish(domainEvent, cancellationToken);
             }
             order.ClearDomainEvents();
 
-            // 6. Notify Customer asynchronously
+            // 6. Continuous notification: Notify Customer that payment is done and order is in kitchen queue
             await _notificationService.NotifyCustomerAsync(
                 order.CustomerId,
                 "Payment Confirmed",
-                $"Your order {order.Id} has been paid and is now being prepared!",
+                $"Your payment for order {order.Id} was confirmed! The kitchen has received your order.",
+                cancellationToken);
+
+            // 7. Continuous notification: Alert Kitchen of incoming paid order
+            await _notificationService.NotifyKitchenAsync(
+                "New Paid Order",
+                $"Order {order.Id} is paid and ready to be cooked!",
                 cancellationToken);
 
             return Result<string>.Success(transactionId);

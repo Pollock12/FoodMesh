@@ -146,20 +146,23 @@ flowchart TD
 
 ## Core Business Domain Rules
 
-1. **Single Restaurant per Order**:
-   - A customer selects dishes exclusively from **one restaurant** per order (`1 Order = 1 Restaurant`).
-   - Ensures hot, fresh meals without multi-stop rider logistics.
-2. **Order Lifecycle State Machine**:
+1. **Direct Self-Operated Restaurant (Chef-to-Doorstep)**:
+   - The restaurant owner/chef cooks the food and delivers it personally to the customer.
+   - External riders and third-party delivery partner fleets are eliminated.
+2. **Order Lifecycle State Machine & Continuous Live Updates**:
    ```text
-   PendingPayment ──(Pay)──> Paid ──(Prepare)──> Preparing ──(Assign Rider)──> OutForDelivery ──(Deliver)──> Delivered
-         │                                 │
-     (Cancel)                          (Cancel)
-         ▼                                 ▼
-     Cancelled                         Cancelled (Releases Rider)
+   PendingPayment ──(Pay)──> Paid ──(Start Cooking)──> Cooking ──(Dispatch)──> OutForDelivery ──(Deliver)──> Delivered
+         │
+     (Cancel)
+         ▼
+     Cancelled
    ```
-3. **Rich Domain Invariants**:
+3. **Strict Order Cancellation Invariant**:
+   - **Pre-Payment Only**: Customers can **ONLY** cancel while the order is in `PendingPayment`.
+   - **Post-Payment Protection**: Once payment is completed, the order is locked into preparation and **cannot** be cancelled.
+4. **Rich Domain Invariants & Continuous Notifications**:
+   - Every state transition emits domain events (`OrderPaidDomainEvent`, `OrderCookingStartedDomainEvent`, `OrderOutForDeliveryDomainEvent`, `OrderDeliveredDomainEvent`) that push real-time continuous updates to the customer and kitchen.
    - `Money` and `DeliveryAddress` modeled as immutable **Value Objects**.
-   - No primitive obsession — decimal math, currencies, and address formatting are fully self-validating.
    - Aggregate roots manage internal entity collections (`Order` encapsulates `OrderItem` list).
 
 ---
@@ -187,14 +190,16 @@ Interactive Swagger UI documentation is available at `/` when running the applic
 
 | Area | HTTP Method & Route | Description |
 |---|---|---|
-| **Restaurants** | `GET /api/restaurants` | List active restaurants & available item counts |
-| **Restaurants** | `GET /api/restaurants/{restaurantId}/menu` | Browse menu items for a selected restaurant |
+| **Restaurants** | `GET /api/restaurants` | List active restaurant & available item counts |
+| **Restaurants** | `GET /api/restaurants/{restaurantId}/menu` | Browse menu items |
 | **Orders** | `POST /api/orders` | Place a new order with selected items and address |
-| **Orders** | `GET /api/orders/{id}` | Get full order details, line items, and assigned rider |
+| **Orders** | `GET /api/orders/{id}` | Get full order details and current live tracking status |
 | **Orders** | `GET /api/orders/customer/{customerId}` | Get paginated order history for a customer |
-| **Orders** | `POST /api/orders/{id}/cancel` | Cancel an unfulfilled order and release assigned rider |
+| **Orders** | `POST /api/orders/{id}/cancel` | Cancel order (**Allowed only before payment**) |
+| **Orders** | `POST /api/orders/{id}/start-cooking` | Chef begins cooking (Continuous update ➔ `Cooking`) |
+| **Orders** | `POST /api/orders/{id}/dispatch` | Owner departs for delivery (Continuous update ➔ `OutForDelivery`) |
+| **Orders** | `POST /api/orders/{id}/deliver` | Food handed over at doorstep (Continuous update ➔ `Delivered`) |
 | **Payments** | `POST /api/payments` | Process payment for an order (`PendingPayment` ➔ `Paid`) |
-| **Deliveries** | `POST /api/deliveries/assign` | Assign available rider to order (`Paid` ➔ `OutForDelivery`) |
 
 ---
 

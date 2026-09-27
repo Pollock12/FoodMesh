@@ -19,9 +19,8 @@ public sealed class OrderOutForDeliveryEventHandler : INotificationHandler<Order
     public Task Handle(OrderOutForDeliveryDomainEvent notification, CancellationToken cancellationToken)
     {
         _logger.LogInformation(
-            "[ReadProjection] Order out for delivery: OrderId={OrderId}, RiderId={RiderId}",
-            notification.OrderId,
-            notification.DeliveryPartnerId);
+            "[ReadProjection] Order out for delivery: OrderId={OrderId}",
+            notification.OrderId);
 
         return Task.CompletedTask;
     }

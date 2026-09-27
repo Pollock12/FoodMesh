@@ -79,14 +79,12 @@ public class DomainServiceTests
         var service = new OrderFulfillmentDomainService();
         var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), _customerAddress, new Money(2.50m, "USD"));
         order.AddItem(Guid.NewGuid(), "Burger", new Money(10.00m, "USD"), 1);
-        order.MarkAsPaid("TXN_1", new Money(12.50m, "USD"));
-        order.StartPreparation();
 
         var rider = new DeliveryPartner(Guid.NewGuid(), "Rider 1", "333", "Bike");
         service.AssignBestAvailableRider(order, [rider]);
 
-        // Act
-        service.CancelFulfillment(order, rider, "Customer cancelled before dispatch");
+        // Act - Cancellation allowed only BEFORE payment (PendingPayment)
+        service.CancelFulfillment(order, rider, "Customer cancelled before payment");
 
         // Assert
         order.Status.Should().Be(OrderStatus.Cancelled);

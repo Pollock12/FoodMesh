@@ -163,50 +163,11 @@ public class ApplicationCommandHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be("TXN_SUCCESS_123");
-        order.Status.Should().Be(OrderStatus.Preparing);
+        order.Status.Should().Be(OrderStatus.Paid);
         order.PaymentStatus.Should().Be(PaymentStatus.Completed);
 
         _mockOrderRepo.Verify(r => r.UpdateAsync(order, It.IsAny<CancellationToken>()), Times.Once);
         _mockNotificationService.Verify(n => n.NotifyCustomerAsync(order.CustomerId, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task AssignDeliveryPartnerCommandHandler_Should_Assign_Closest_Rider_And_Save_Atomically()
-    {
-        // Arrange
-        var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
-        order.AddItem(Guid.NewGuid(), "Pasta", new Money(12.00m, "USD"), 1);
-        order.MarkAsPaid("TXN_1", new Money(14.00m, "USD"));
-        order.StartPreparation();
-
-        var rider = new DeliveryPartner(Guid.NewGuid(), "Fast Rider", "+8801999999999", "Bike");
-
-        _mockOrderCommandService.Setup(s => s.GetOrderAsync(order.Id, It.IsAny<CancellationToken>())).ReturnsAsync(order);
-        _mockOrderCommandService.Setup(s => s.GetAvailableDeliveryPartnersAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<DeliveryPartner> { rider });
-
-        var handler = new AssignDeliveryPartnerCommandHandler(
-            _mockUow.Object,
-            _mockOrderCommandService.Object,
-            _fulfillmentService,
-            _mockNotificationService.Object,
-            _mockPublisher.Object);
-
-        var command = new AssignDeliveryPartnerCommand(order.Id);
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(rider.Id);
-        order.AssignedDeliveryPartnerId.Should().Be(rider.Id);
-        rider.IsAvailable.Should().BeFalse();
-
-        _mockOrderRepo.Verify(r => r.UpdateAsync(order, It.IsAny<CancellationToken>()), Times.Once);
-        _mockPartnerRepo.Verify(r => r.UpdateAsync(rider, It.IsAny<CancellationToken>()), Times.Once);
-        _mockNotificationService.Verify(n => n.NotifyRiderAsync(rider.Id, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -216,8 +177,6 @@ public class ApplicationCommandHandlerTests
         var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
         var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Salad", new Money(8.00m, "USD"), 1);
-        order.MarkAsPaid("TXN_1", new Money(10.00m, "USD"));
-        order.StartPreparation();
 
         var rider = new DeliveryPartner(Guid.NewGuid(), "Rider", "+123", "Bike");
         _fulfillmentService.AssignBestAvailableRider(order, [rider]);
@@ -244,6 +203,125 @@ public class ApplicationCommandHandlerTests
 
         _mockOrderRepo.Verify(r => r.UpdateAsync(order, It.IsAny<CancellationToken>()), Times.Once);
         _mockPartnerRepo.Verify(r => r.UpdateAsync(rider, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CancelOrderCommandHandler_Should_Fail_When_Order_Is_Already_Paid()
+    {
+        // Arrange
+        var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
+        order.AddItem(Guid.NewGuid(), "Burger", new Money(10.00m, "USD"), 1);
+        order.MarkAsPaid("TXN_PAID", new Money(12.00m, "USD"));
+
+        _mockOrderCommandService.Setup(s => s.GetOrderAsync(order.Id, It.IsAny<CancellationToken>())).ReturnsAsync(order);
+
+        var handler = new CancelOrderCommandHandler(
+            _mockUow.Object,
+            _mockOrderCommandService.Object,
+            _fulfillmentService,
+            _mockPublisher.Object);
+
+        var command = new CancelOrderCommand(order.Id, "Customer wants to cancel after payment");
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Contain("payment has been completed");
+        order.Status.Should().Be(OrderStatus.Paid);
+    }
+
+    [Fact]
+    public async Task StartCookingCommandHandler_Should_Transition_To_Cooking_And_Notify_Customer()
+    {
+        // Arrange
+        var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
+        order.AddItem(Guid.NewGuid(), "Steak", new Money(25.00m, "USD"), 1);
+        order.MarkAsPaid("TXN_999", new Money(27.00m, "USD"));
+
+        _mockOrderCommandService.Setup(s => s.GetOrderAsync(order.Id, It.IsAny<CancellationToken>())).ReturnsAsync(order);
+
+        var handler = new StartCookingCommandHandler(
+            _mockUow.Object,
+            _mockOrderCommandService.Object,
+            _mockNotificationService.Object,
+            _mockPublisher.Object);
+
+        var command = new StartCookingCommand(order.Id);
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        order.Status.Should().Be(OrderStatus.Cooking);
+        order.CookingStartedAtUtc.Should().NotBeNull();
+        _mockNotificationService.Verify(n => n.NotifyCustomerAsync(order.CustomerId, "Cooking In Progress", It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mockOrderRepo.Verify(r => r.UpdateAsync(order, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DispatchDeliveryCommandHandler_Should_Transition_To_OutForDelivery_Without_Rider()
+    {
+        // Arrange
+        var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
+        order.AddItem(Guid.NewGuid(), "Steak", new Money(25.00m, "USD"), 1);
+        order.MarkAsPaid("TXN_999", new Money(27.00m, "USD"));
+        order.StartCooking();
+
+        _mockOrderCommandService.Setup(s => s.GetOrderAsync(order.Id, It.IsAny<CancellationToken>())).ReturnsAsync(order);
+
+        var handler = new DispatchDeliveryCommandHandler(
+            _mockUow.Object,
+            _mockOrderCommandService.Object,
+            _mockNotificationService.Object,
+            _mockPublisher.Object);
+
+        var command = new DispatchDeliveryCommand(order.Id);
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        order.Status.Should().Be(OrderStatus.OutForDelivery);
+        order.DispatchedAtUtc.Should().NotBeNull();
+        _mockNotificationService.Verify(n => n.NotifyCustomerAsync(order.CustomerId, "Delivery On The Way", It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CompleteDeliveryCommandHandler_Should_Transition_To_Delivered_And_Notify()
+    {
+        // Arrange
+        var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
+        order.AddItem(Guid.NewGuid(), "Steak", new Money(25.00m, "USD"), 1);
+        order.MarkAsPaid("TXN_999", new Money(27.00m, "USD"));
+        order.StartCooking();
+        order.DispatchForDelivery();
+
+        _mockOrderCommandService.Setup(s => s.GetOrderAsync(order.Id, It.IsAny<CancellationToken>())).ReturnsAsync(order);
+
+        var handler = new CompleteDeliveryCommandHandler(
+            _mockUow.Object,
+            _mockOrderCommandService.Object,
+            _mockNotificationService.Object,
+            _mockPublisher.Object);
+
+        var command = new CompleteDeliveryCommand(order.Id);
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        order.Status.Should().Be(OrderStatus.Delivered);
+        order.DeliveredAtUtc.Should().NotBeNull();
+        _mockNotificationService.Verify(n => n.NotifyCustomerAsync(order.CustomerId, "Order Delivered", It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

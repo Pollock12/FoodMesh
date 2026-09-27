@@ -103,22 +103,51 @@ public class OrderAggregateTests
         order.MarkAsPaid("TXN_999", new Money(17.00m, "USD"));
         order.Status.Should().Be(OrderStatus.Paid);
 
-        // 2. Prepare
-        order.StartPreparation();
-        order.Status.Should().Be(OrderStatus.Preparing);
+        // 2. Prepare / Cook
+        order.StartCooking();
+        order.Status.Should().Be(OrderStatus.Cooking);
+        order.CookingStartedAtUtc.Should().NotBeNull();
 
-        // 3. Assign Rider
-        order.AssignDeliveryPartner(riderId);
-        order.AssignedDeliveryPartnerId.Should().Be(riderId);
-
-        // 4. Dispatch
+        // 3. Dispatch for self-delivery by owner (no rider required)
         order.DispatchForDelivery();
         order.Status.Should().Be(OrderStatus.OutForDelivery);
+        order.DispatchedAtUtc.Should().NotBeNull();
 
-        // 5. Deliver
+        // 4. Deliver
         order.MarkDelivered();
         order.Status.Should().Be(OrderStatus.Delivered);
         order.DeliveredAtUtc.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Order_Can_Be_Cancelled_Before_Payment()
+    {
+        // Arrange
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
+        order.AddItem(Guid.NewGuid(), "Burger", new Money(10.00m, "USD"), 1);
+
+        // Act
+        order.Cancel("Customer decided to cancel before payment");
+
+        // Assert
+        order.Status.Should().Be(OrderStatus.Cancelled);
+        order.CancellationReason.Should().Be("Customer decided to cancel before payment");
+    }
+
+    [Fact]
+    public void Order_Cannot_Be_Cancelled_After_Payment()
+    {
+        // Arrange
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
+        order.AddItem(Guid.NewGuid(), "Pizza", new Money(15.00m, "USD"), 1);
+        order.MarkAsPaid("TXN_123", new Money(17.00m, "USD"));
+
+        // Act
+        Action act = () => order.Cancel("Changed my mind after payment");
+
+        // Assert
+        act.Should().Throw<DomainException>()
+            .WithMessage("*once payment has been completed*");
     }
 
     [Fact]
@@ -129,7 +158,6 @@ public class OrderAggregateTests
         order.AddItem(Guid.NewGuid(), "Pizza", new Money(15.00m, "USD"), 1);
         order.MarkAsPaid("TXN_999", new Money(17.00m, "USD"));
         order.StartPreparation();
-        order.AssignDeliveryPartner(Guid.NewGuid());
         order.DispatchForDelivery();
         order.MarkDelivered();
 
