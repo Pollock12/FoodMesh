@@ -169,23 +169,22 @@ public class ApiControllerTests
     }
 
     [Fact]
-    public async Task RestaurantsController_GetRestaurantMenu_Should_Return_Ok_With_Items()
+    public async Task MenuController_GetMenu_Should_Return_Ok_With_Items()
     {
         // Arrange
-        var restaurantId = Guid.NewGuid();
         var menuItems = new List<MenuItemViewModel>
         {
-            new() { MenuItemId = Guid.NewGuid(), RestaurantId = restaurantId, Name = "Pizza", Price = 12.50m, Category = "Food" }
+            new() { MenuItemId = Guid.NewGuid(), Name = "Pizza", Price = 12.50m, Category = "Food" }
         };
 
         _mockMediator
-            .Setup(m => m.Send(It.Is<GetRestaurantMenuQuery>(q => q.RestaurantId == restaurantId), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<GetMenuQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<IReadOnlyList<MenuItemViewModel>>.Success(menuItems));
 
-        var controller = SetupController(new RestaurantsController());
+        var controller = SetupController(new MenuController());
 
         // Act
-        var result = await controller.GetRestaurantMenu(restaurantId);
+        var result = await controller.GetMenu();
 
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
@@ -193,6 +192,29 @@ public class ApiControllerTests
         response.Success.Should().BeTrue();
         response.Data.Should().HaveCount(1);
         response.Data!.First().Name.Should().Be("Pizza");
+    }
+
+    [Fact]
+    public async Task MenuController_AddMenuItem_Should_Return_Ok_With_Id()
+    {
+        // Arrange
+        var itemId = Guid.NewGuid();
+        var command = new AddMenuItemCommand("Classic Burger", "Juicy beef", 9.99m, "USD", "Burgers");
+
+        _mockMediator
+            .Setup(m => m.Send(It.IsAny<AddMenuItemCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<Guid>.Success(itemId));
+
+        var controller = SetupController(new MenuController());
+
+        // Act
+        var result = await controller.AddMenuItem(command);
+
+        // Assert
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var response = okResult.Value.Should().BeOfType<ApiResponse<Guid>>().Subject;
+        response.Success.Should().BeTrue();
+        response.Data.Should().Be(itemId);
     }
 
 

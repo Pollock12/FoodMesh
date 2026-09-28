@@ -6,7 +6,6 @@ namespace FoodMesh.Read.ViewModels;
 public sealed class MenuItemViewModel
 {
     public Guid MenuItemId { get; set; }
-    public Guid RestaurantId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; }

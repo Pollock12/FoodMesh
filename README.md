@@ -190,8 +190,8 @@ Interactive Swagger UI documentation is available at `/` when running the applic
 
 | Area | HTTP Method & Route | Description |
 |---|---|---|
-| **Restaurants** | `GET /api/restaurants` | List active restaurant & available item counts |
-| **Restaurants** | `GET /api/restaurants/{restaurantId}/menu` | Browse menu items |
+| **Menu** | `GET /api/menu` | Browse all available menu items (Public - anyone can view) |
+| **Menu** | `POST /api/menu` | Add a new food dish to the menu (Owner action) |
 | **Orders** | `POST /api/orders` | Place a new order with selected items and address |
 | **Orders** | `GET /api/orders/{id}` | Get full order details and current live tracking status |
 | **Orders** | `GET /api/orders/customer/{customerId}` | Get paginated order history for a customer |

@@ -346,4 +346,23 @@ public class ApplicationCommandHandlerTests
         // Assert
         mockMediator.Verify(m => m.Send((object)command, It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    [Fact]
+    public async Task AddMenuItemCommandHandler_Should_Insert_Item_Successfully()
+    {
+        // Arrange
+        var mockItemRepo = new Mock<ITransactionalRepository<RestaurantItem>>();
+        _mockUow.Setup(u => u.GetRepository<RestaurantItem>()).Returns(mockItemRepo.Object);
+
+        var handler = new AddMenuItemCommandHandler(_mockUow.Object);
+        var command = new AddMenuItemCommand("Classic Cheeseburger", "Juicy beef", 11.99m, "USD", "Burgers");
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeEmpty();
+        mockItemRepo.Verify(r => r.InsertAsync(It.Is<RestaurantItem>(i => i.Name == "Classic Cheeseburger" && i.Price.Amount == 11.99m), It.IsAny<CancellationToken>()), Times.Once);
+    }
 }
