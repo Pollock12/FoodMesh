@@ -5,29 +5,26 @@ using MongoDB.Driver;
 namespace FoodMesh.Infrastructure;
 
 /// <summary>
-/// Seeds initial restaurants, menu items, and delivery partners if database is fresh.
+/// Seeds initial restaurant menu items if database is fresh.
 /// Ensures Swagger endpoints immediately have real data to query and test.
 /// </summary>
 public static class DatabaseSeeder
 {
-    public static readonly Guid BurgerBistroId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-    public static readonly Guid PizzaPalaceId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+    public static readonly Guid DefaultRestaurantId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
     public static async Task SeedAsync(IMongoDatabase database)
     {
         var itemsCollection = database.GetCollection<RestaurantItem>("RestaurantItems");
-        var partnersCollection = database.GetCollection<DeliveryPartner>("DeliveryPartners");
 
-        // 1. Seed Restaurant Menu Items if empty
+        // Seed Restaurant Menu Items if empty
         var itemsCount = await itemsCollection.CountDocumentsAsync(FilterDefinition<RestaurantItem>.Empty);
         if (itemsCount == 0)
         {
             var seedItems = new List<RestaurantItem>
             {
-                // Burger Bistro Menu
                 new(
                     Guid.Parse("11111111-1111-1111-1111-000000000001"),
-                    BurgerBistroId,
+                    DefaultRestaurantId,
                     "Classic Cheeseburger",
                     "Juicy beef patty with aged cheddar, lettuce, tomato, and special sauce.",
                     new Money(12.99m, "USD"),
@@ -36,7 +33,7 @@ public static class DatabaseSeeder
                 ),
                 new(
                     Guid.Parse("11111111-1111-1111-1111-000000000002"),
-                    BurgerBistroId,
+                    DefaultRestaurantId,
                     "Smoky BBQ Bacon Burger",
                     "Grilled beef patty topped with smoked bacon, crispy onions, and tangy BBQ sauce.",
                     new Money(14.50m, "USD"),
@@ -45,18 +42,16 @@ public static class DatabaseSeeder
                 ),
                 new(
                     Guid.Parse("11111111-1111-1111-1111-000000000003"),
-                    BurgerBistroId,
+                    DefaultRestaurantId,
                     "Crispy French Fries",
                     "Golden, crunchy salted fries with garlic mayo dip.",
                     new Money(4.50m, "USD"),
                     "Sides",
                     true
                 ),
-
-                // Pizza Palace Menu
                 new(
                     Guid.Parse("22222222-2222-2222-2222-000000000001"),
-                    PizzaPalaceId,
+                    DefaultRestaurantId,
                     "Margherita Pizza",
                     "Classic sourdough base with San Marzano tomatoes, fresh mozzarella, and basil.",
                     new Money(15.00m, "USD"),
@@ -65,7 +60,7 @@ public static class DatabaseSeeder
                 ),
                 new(
                     Guid.Parse("22222222-2222-2222-2222-000000000002"),
-                    PizzaPalaceId,
+                    DefaultRestaurantId,
                     "Pepperoni Feast",
                     "Loaded with artisanal beef pepperoni and melted mozzarella cheese.",
                     new Money(18.50m, "USD"),
@@ -74,7 +69,7 @@ public static class DatabaseSeeder
                 ),
                 new(
                     Guid.Parse("22222222-2222-2222-2222-000000000003"),
-                    PizzaPalaceId,
+                    DefaultRestaurantId,
                     "Cheesy Garlic Bread",
                     "Toasted baguette brushed with garlic butter and melted mozzarella.",
                     new Money(5.50m, "USD"),
@@ -84,29 +79,6 @@ public static class DatabaseSeeder
             };
 
             await itemsCollection.InsertManyAsync(seedItems);
-        }
-
-        // 2. Seed Delivery Partners (Riders) if empty
-        var partnersCount = await partnersCollection.CountDocumentsAsync(FilterDefinition<DeliveryPartner>.Empty);
-        if (partnersCount == 0)
-        {
-            var seedPartners = new List<DeliveryPartner>
-            {
-                new(
-                    Guid.Parse("33333333-3333-3333-3333-000000000001"),
-                    "John Doe (Rider)",
-                    "+1-555-0101",
-                    "Bike"
-                ),
-                new(
-                    Guid.Parse("33333333-3333-3333-3333-000000000002"),
-                    "Alex Smith (Rider)",
-                    "+1-555-0102",
-                    "Scooter"
-                )
-            };
-
-            await partnersCollection.InsertManyAsync(seedPartners);
         }
     }
 }

@@ -72,27 +72,20 @@ public class InfrastructureTests
     }
 
     [Fact]
-    public void BsonSerialization_Should_Serialize_DeliveryPartner_And_RestaurantItem_Without_Explicit_ClassMaps()
+    public void BsonSerialization_Should_Serialize_RestaurantItem_Without_Explicit_ClassMaps()
     {
         // Ensure registered
         BsonClassMaps.Register();
 
         // Arrange
-        var partner = new FoodMesh.Domain.Entities.DeliveryPartner(
-            Guid.NewGuid(), "Speedy Rider", "+123456789", "Motorcycle");
         var item = new FoodMesh.Domain.Entities.RestaurantItem(
             Guid.NewGuid(), Guid.NewGuid(), "Burger", "Delicious", new FoodMesh.Domain.ValueObjects.Money(8.50m, "USD"), "FastFood");
 
         // Act
-        var partnerDoc = partner.ToBsonDocument();
         var itemDoc = item.ToBsonDocument();
-
-        var deserializedPartner = BsonSerializer.Deserialize<FoodMesh.Domain.Entities.DeliveryPartner>(partnerDoc);
         var deserializedItem = BsonSerializer.Deserialize<FoodMesh.Domain.Entities.RestaurantItem>(itemDoc);
 
         // Assert
-        deserializedPartner.FullName.Should().Be("Speedy Rider");
-        deserializedPartner.VehicleType.Should().Be("Motorcycle");
         deserializedItem.Name.Should().Be("Burger");
         deserializedItem.Price.Amount.Should().Be(8.50m);
     }

@@ -100,7 +100,7 @@ flowchart TD
 5. **CommandService**: The database researcher. Runs non-mutating database queries to check preconditions (e.g., *Is the restaurant active? Are menu items available?*).
 6. **Domain Aggregate**: Enforces core domain invariants and business rules (e.g., `Order.Create()`, status transitions, line item subtotals). Emits domain events.
 7. **Repository / UnitOfWork**: Encapsulates atomic data access within a single MongoDB client session transaction (`IClientSessionHandle`).
-8. **MongoDB**: Persists the updated document state into collections (`Orders`, `DeliveryPartners`, etc.).
+8. **MongoDB**: Persists the updated document state into collections (`Orders`, `RestaurantItems`, etc.).
 
 ---
 

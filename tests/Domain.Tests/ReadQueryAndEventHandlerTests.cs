@@ -16,14 +16,11 @@ public class ReadQueryAndEventHandlerTests
 {
     private readonly Mock<IMongoDatabase> _mockDatabase = new();
     private readonly Mock<IMongoCollection<Order>> _mockOrdersCollection = new();
-    private readonly Mock<IMongoCollection<DeliveryPartner>> _mockPartnersCollection = new();
 
     public ReadQueryAndEventHandlerTests()
     {
         _mockDatabase.Setup(d => d.GetCollection<Order>("Orders", It.IsAny<MongoCollectionSettings>()))
             .Returns(_mockOrdersCollection.Object);
-        _mockDatabase.Setup(d => d.GetCollection<DeliveryPartner>("DeliveryPartners", It.IsAny<MongoCollectionSettings>()))
-            .Returns(_mockPartnersCollection.Object);
     }
 
     [Fact]

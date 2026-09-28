@@ -21,18 +21,15 @@ public class ApplicationCommandHandlerTests
 {
     private readonly Mock<IMongoUnitOfWork> _mockUow = new();
     private readonly Mock<ITransactionalRepository<Order>> _mockOrderRepo = new();
-    private readonly Mock<ITransactionalRepository<DeliveryPartner>> _mockPartnerRepo = new();
     private readonly Mock<IOrderCommandService> _mockOrderCommandService = new();
     private readonly Mock<IPublisher> _mockPublisher = new();
     private readonly Mock<IDeliveryFeeCalculator> _mockFeeCalculator = new();
     private readonly Mock<IPaymentGatewayClientService> _mockPaymentGateway = new();
     private readonly Mock<INotificationCommandService> _mockNotificationService = new();
-    private readonly IOrderFulfillmentDomainService _fulfillmentService = new OrderFulfillmentDomainService();
 
     public ApplicationCommandHandlerTests()
     {
         _mockUow.Setup(u => u.GetRepository<Order>()).Returns(_mockOrderRepo.Object);
-        _mockUow.Setup(u => u.GetRepository<DeliveryPartner>()).Returns(_mockPartnerRepo.Object);
         _mockUow
             .Setup(u => u.ExecuteInTransactionAsync(It.IsAny<Func<MongoDB.Driver.IClientSessionHandle, Task>>(), It.IsAny<CancellationToken>()))
             .Returns<Func<MongoDB.Driver.IClientSessionHandle, Task>, CancellationToken>((action, ct) => action(Mock.Of<MongoDB.Driver.IClientSessionHandle>()));
@@ -171,23 +168,18 @@ public class ApplicationCommandHandlerTests
     }
 
     [Fact]
-    public async Task CancelOrderCommandHandler_Should_Cancel_And_Release_Assigned_Partner()
+    public async Task CancelOrderCommandHandler_Should_Cancel_Order_Before_Payment()
     {
         // Arrange
         var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
         var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Salad", new Money(8.00m, "USD"), 1);
 
-        var rider = new DeliveryPartner(Guid.NewGuid(), "Rider", "+123", "Bike");
-        _fulfillmentService.AssignBestAvailableRider(order, [rider]);
-
         _mockOrderCommandService.Setup(s => s.GetOrderAsync(order.Id, It.IsAny<CancellationToken>())).ReturnsAsync(order);
-        _mockOrderCommandService.Setup(s => s.GetDeliveryPartnerAsync(rider.Id, It.IsAny<CancellationToken>())).ReturnsAsync(rider);
 
         var handler = new CancelOrderCommandHandler(
             _mockUow.Object,
             _mockOrderCommandService.Object,
-            _fulfillmentService,
             _mockPublisher.Object);
 
         var command = new CancelOrderCommand(order.Id, "Customer decided to eat outside");
@@ -198,11 +190,8 @@ public class ApplicationCommandHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         order.Status.Should().Be(OrderStatus.Cancelled);
-        rider.IsAvailable.Should().BeTrue();
-        rider.ActiveOrderId.Should().BeNull();
 
         _mockOrderRepo.Verify(r => r.UpdateAsync(order, It.IsAny<CancellationToken>()), Times.Once);
-        _mockPartnerRepo.Verify(r => r.UpdateAsync(rider, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -219,7 +208,6 @@ public class ApplicationCommandHandlerTests
         var handler = new CancelOrderCommandHandler(
             _mockUow.Object,
             _mockOrderCommandService.Object,
-            _fulfillmentService,
             _mockPublisher.Object);
 
         var command = new CancelOrderCommand(order.Id, "Customer wants to cancel after payment");

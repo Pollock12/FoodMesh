@@ -49,16 +49,4 @@ public sealed class OrderCommandService : IOrderCommandService
 
         return availableItems.Count == idList.Count;
     }
-
-    public async Task<IReadOnlyList<DeliveryPartner>> GetAvailableDeliveryPartnersAsync(CancellationToken cancellationToken = default)
-    {
-        var repo = _unitOfWork.GetRepository<DeliveryPartner>();
-        return await repo.FindAsync(p => p.IsAvailable && !p.ActiveOrderId.HasValue, cancellationToken);
-    }
-
-    public async Task<DeliveryPartner?> GetDeliveryPartnerAsync(Guid partnerId, CancellationToken cancellationToken = default)
-    {
-        var repo = _unitOfWork.GetRepository<DeliveryPartner>();
-        return await repo.GetByIdAsync(partnerId, cancellationToken);
-    }
 }

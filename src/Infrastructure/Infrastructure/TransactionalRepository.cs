@@ -130,7 +130,7 @@ public class TransactionalRepository<TEntity> : ITransactionalRepository<TEntity
     private static string GetCollectionName()
     {
         var typeName = typeof(TEntity).Name;
-        // Simple pluralization: Order -> Orders, DeliveryPartner -> DeliveryPartners
+        // Simple pluralization: Order -> Orders, RestaurantItem -> RestaurantItems
         if (typeName.EndsWith('s'))
             return typeName;
         if (typeName.EndsWith('y'))

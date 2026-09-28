@@ -12,7 +12,7 @@ namespace FoodMesh.Infrastructure;
 /// 2. Order (mapping private backing field _items)
 /// 3. Money (mapping constructor-only parameters)
 /// 4. DeliveryAddress (mapping constructor-only parameters)
-/// All other entities (Entity, OrderItem, RestaurantItem, DeliveryPartner) are handled automatically by MongoDB conventions.
+/// All other entities (Entity, OrderItem, RestaurantItem) are handled automatically by MongoDB conventions.
 /// </summary>
 public static class BsonClassMaps
 {

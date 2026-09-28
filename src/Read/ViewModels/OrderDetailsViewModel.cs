@@ -11,8 +11,6 @@ public sealed class OrderDetailsViewModel
     public string Status { get; set; } = string.Empty;
     public string PaymentStatus { get; set; } = string.Empty;
     public string? PaymentTransactionId { get; set; }
-    public Guid? AssignedDeliveryPartnerId { get; set; }
-    public string? DeliveryPartnerName { get; set; }
 
     public string DeliveryStreet { get; set; } = string.Empty;
     public string DeliveryCity { get; set; } = string.Empty;

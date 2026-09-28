@@ -19,7 +19,6 @@ public sealed class Order : AggregateRoot<Guid>
     public OrderStatus Status { get; private set; }
     public PaymentStatus PaymentStatus { get; private set; }
     public string? PaymentTransactionId { get; private set; }
-    public Guid? AssignedDeliveryPartnerId { get; private set; }
     public Money DeliveryFee { get; private set; } = default!;
     public string? CancellationReason { get; private set; }
 
@@ -185,23 +184,6 @@ public sealed class Order : AggregateRoot<Guid>
     /// </summary>
     public void StartCooking() => StartPreparation();
 
-    /// <summary>
-    /// Assigns a delivery rider to this order (optional / legacy compatibility).
-    /// In this self-operated model, the owner delivers directly.
-    /// </summary>
-    public void AssignDeliveryPartner(Guid deliveryPartnerId)
-    {
-        if (deliveryPartnerId == Guid.Empty)
-            throw new DomainException("Delivery partner ID cannot be empty.", "INVALID_PARTNER");
-
-        if (Status != OrderStatus.PendingPayment && Status != OrderStatus.Paid && Status != OrderStatus.Cooking)
-            throw new DomainException($"Cannot assign delivery partner for order in '{Status}' state.", "INVALID_STATE");
-
-        AssignedDeliveryPartnerId = deliveryPartnerId;
-        UpdatedAtUtc = DateTime.UtcNow;
-
-        AddDomainEvent(new DeliveryPartnerAssignedDomainEvent(Id, deliveryPartnerId, DateTime.UtcNow));
-    }
 
     /// <summary>
     /// Marks the order as out for delivery when the owner departs with the food.

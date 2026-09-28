@@ -1,5 +1,4 @@
 using FoodMesh.Domain.Aggregates;
-using FoodMesh.Domain.Entities;
 
 namespace FoodMesh.Application.CommandServices;
 
@@ -12,6 +11,4 @@ public interface IOrderCommandService
     Task<Order?> GetOrderAsync(Guid orderId, CancellationToken cancellationToken = default);
     Task<bool> IsRestaurantActiveAsync(Guid restaurantId, CancellationToken cancellationToken = default);
     Task<bool> AreMenuItemsAvailableAsync(Guid restaurantId, IEnumerable<Guid> menuItemIds, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<DeliveryPartner>> GetAvailableDeliveryPartnersAsync(CancellationToken cancellationToken = default);
-    Task<DeliveryPartner?> GetDeliveryPartnerAsync(Guid partnerId, CancellationToken cancellationToken = default);
 }

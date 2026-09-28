@@ -32,7 +32,6 @@ public static class DependencyInjection
 
         // 4. Register Domain Services
         services.AddScoped<IDeliveryFeeCalculator, DeliveryFeeCalculator>();
-        services.AddScoped<IOrderFulfillmentDomainService, OrderFulfillmentDomainService>();
 
         // 5. Register Background Command Queue & Worker
         services.AddSingleton<ICommandQueue, InMemoryCommandQueue>();

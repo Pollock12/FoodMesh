@@ -30,17 +30,6 @@ public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery
         if (order is null)
             return Result<OrderDetailsViewModel>.Failure($"Order with ID '{request.OrderId}' not found.");
 
-        string? partnerName = null;
-        if (order.AssignedDeliveryPartnerId.HasValue)
-        {
-            var partnersCollection = _database.GetCollection<DeliveryPartner>("DeliveryPartners");
-            var partner = await partnersCollection
-                .Find(p => p.Id == order.AssignedDeliveryPartnerId.Value)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            partnerName = partner?.FullName;
-        }
-
         var viewModel = new OrderDetailsViewModel
         {
             OrderId = order.Id,
@@ -49,8 +38,6 @@ public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery
             Status = order.Status.ToString(),
             PaymentStatus = order.PaymentStatus.ToString(),
             PaymentTransactionId = order.PaymentTransactionId,
-            AssignedDeliveryPartnerId = order.AssignedDeliveryPartnerId,
-            DeliveryPartnerName = partnerName,
             DeliveryStreet = order.DeliveryAddress.Street,
             DeliveryCity = order.DeliveryAddress.City,
             DeliveryPostalCode = order.DeliveryAddress.PostalCode,
