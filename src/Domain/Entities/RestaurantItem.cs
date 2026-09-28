@@ -5,6 +5,7 @@ namespace FoodMesh.Domain.Entities;
 
 /// <summary>
 /// Entity representing a food item offered by a Restaurant menu.
+/// Supports soft delete so historical orders maintain item integrity.
 /// </summary>
 public sealed class RestaurantItem : Entity<Guid>
 {
@@ -14,6 +15,8 @@ public sealed class RestaurantItem : Entity<Guid>
     public Money Price { get; private set; } = default!;
     public string Category { get; private set; } = string.Empty;
     public bool IsAvailable { get; private set; }
+    public bool IsDeleted { get; private set; }
+    public DateTime? DeletedAtUtc { get; private set; }
 
     private RestaurantItem() : base() { }
 
@@ -24,7 +27,8 @@ public sealed class RestaurantItem : Entity<Guid>
         string description,
         Money price,
         string category,
-        bool isAvailable = true) : base(id)
+        bool isAvailable = true,
+        bool isDeleted = false) : base(id)
     {
         if (restaurantId == Guid.Empty)
             throw new DomainException("Restaurant identifier cannot be empty.", "INVALID_RESTAURANT_ID");
@@ -41,10 +45,14 @@ public sealed class RestaurantItem : Entity<Guid>
         Price = price;
         Category = category?.Trim() ?? "General";
         IsAvailable = isAvailable;
+        IsDeleted = isDeleted;
     }
 
     public void SetAvailability(bool isAvailable)
     {
+        if (IsDeleted && isAvailable)
+            throw new DomainException("Cannot mark a deleted menu item as available.", "CANNOT_ENABLE_DELETED_ITEM");
+
         IsAvailable = isAvailable;
         UpdatedAtUtc = DateTime.UtcNow;
     }
@@ -55,6 +63,32 @@ public sealed class RestaurantItem : Entity<Guid>
             throw new DomainException("Price cannot be negative.", "INVALID_PRICE");
 
         Price = newPrice;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Soft deletes the menu item, preventing it from appearing in customer queries or new orders.
+    /// </summary>
+    public void SoftDelete()
+    {
+        if (IsDeleted) return;
+
+        IsDeleted = true;
+        IsAvailable = false;
+        DeletedAtUtc = DateTime.UtcNow;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Restores a previously soft-deleted menu item.
+    /// </summary>
+    public void Restore()
+    {
+        if (!IsDeleted) return;
+
+        IsDeleted = false;
+        IsAvailable = true;
+        DeletedAtUtc = null;
         UpdatedAtUtc = DateTime.UtcNow;
     }
 }

@@ -24,7 +24,10 @@ public sealed class GetMenuQueryHandler : IRequestHandler<GetMenuQuery, Result<I
         var itemsCollection = _database.GetCollection<RestaurantItem>("RestaurantItems");
 
         var filterBuilder = Builders<RestaurantItem>.Filter;
-        var filter = filterBuilder.Eq(i => i.IsAvailable, true);
+        var filter = filterBuilder.And(
+            filterBuilder.Eq(i => i.IsDeleted, false),
+            filterBuilder.Eq(i => i.IsAvailable, true)
+        );
 
         if (!string.IsNullOrWhiteSpace(request.Category))
         {

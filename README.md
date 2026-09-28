@@ -192,6 +192,7 @@ Interactive Swagger UI documentation is available at `/` when running the applic
 |---|---|---|
 | **Menu** | `GET /api/menu` | Browse all available menu items (Public - anyone can view) |
 | **Menu** | `POST /api/menu` | Add a new food dish to the menu (Owner action) |
+| **Menu** | `DELETE /api/menu/{id}` | Soft delete a food dish from the menu (Owner action) |
 | **Orders** | `POST /api/orders` | Place a new order with selected items and address |
 | **Orders** | `GET /api/orders/{id}` | Get full order details and current live tracking status |
 | **Orders** | `GET /api/orders/customer/{customerId}` | Get paginated order history for a customer |

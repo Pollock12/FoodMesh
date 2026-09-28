@@ -34,4 +34,17 @@ public sealed class MenuController : BaseApiController
         var result = await Mediator.Send(command);
         return HandleResult(result, "Menu item added successfully.");
     }
+
+    /// <summary>
+    /// Soft deletes a food item from the menu.
+    /// Executed by the restaurant owner.
+    /// </summary>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteMenuItem([FromRoute] Guid id)
+    {
+        var result = await Mediator.Send(new DeleteMenuItemCommand(id));
+        return HandleResult(result, "Menu item removed successfully.");
+    }
 }

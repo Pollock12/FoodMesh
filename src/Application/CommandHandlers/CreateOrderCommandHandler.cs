@@ -44,10 +44,6 @@ public sealed class CreateOrderCommandHandler : IRequestHandler<CreateOrderComma
         try
         {
             // 1. Business checks delegated to CommandService (the Database Researcher)
-            var isRestaurantActive = await _orderCommandService.IsRestaurantActiveAsync(command.RestaurantId, cancellationToken);
-            if (!isRestaurantActive)
-                return Result<Guid>.Failure($"Restaurant '{command.RestaurantId}' is currently inactive or does not exist.");
-
             var areItemsAvailable = await _orderCommandService.AreMenuItemsAvailableAsync(
                 command.RestaurantId,
                 command.Items.Select(i => i.MenuItemId),

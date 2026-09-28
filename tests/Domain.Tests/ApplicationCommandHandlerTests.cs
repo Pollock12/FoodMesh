@@ -35,7 +35,6 @@ public class ApplicationCommandHandlerTests
             .Returns<Func<MongoDB.Driver.IClientSessionHandle, Task>, CancellationToken>((action, ct) => action(Mock.Of<MongoDB.Driver.IClientSessionHandle>()));
 
         // Default setup for CommandService researcher queries
-        _mockOrderCommandService.Setup(s => s.IsRestaurantActiveAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _mockOrderCommandService.Setup(s => s.AreMenuItemsAvailableAsync(It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
     }
 
@@ -75,17 +74,18 @@ public class ApplicationCommandHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeEmpty();
 
-        _mockOrderCommandService.Verify(s => s.IsRestaurantActiveAsync(command.RestaurantId, It.IsAny<CancellationToken>()), Times.Once);
         _mockOrderCommandService.Verify(s => s.AreMenuItemsAvailableAsync(command.RestaurantId, It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()), Times.Once);
         _mockOrderRepo.Verify(r => r.InsertAsync(It.Is<Order>(o => o.Id == result.Value), It.IsAny<CancellationToken>()), Times.Once);
         _mockPublisher.Verify(p => p.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task CreateOrderCommandHandler_Should_Fail_When_Restaurant_Inactive()
+    public async Task CreateOrderCommandHandler_Should_Fail_When_Items_Unavailable()
     {
         // Arrange
-        _mockOrderCommandService.Setup(s => s.IsRestaurantActiveAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+        _mockOrderCommandService
+            .Setup(s => s.AreMenuItemsAvailableAsync(It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
 
         var handler = new CreateOrderCommandHandler(
             _mockUow.Object,
@@ -104,7 +104,7 @@ public class ApplicationCommandHandlerTests
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Contain("inactive or does not exist");
+        result.Error.Should().Contain("unavailable");
     }
 
     [Fact]
@@ -352,5 +352,51 @@ public class ApplicationCommandHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeEmpty();
         mockItemRepo.Verify(r => r.InsertAsync(It.Is<RestaurantItem>(i => i.Name == "Classic Cheeseburger" && i.Price.Amount == 11.99m), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteMenuItemCommandHandler_Should_SoftDelete_Item_Successfully()
+    {
+        // Arrange
+        var itemId = Guid.NewGuid();
+        var item = new RestaurantItem(itemId, Guid.NewGuid(), "Burger", "Juicy", new Money(10m, "USD"), "Food", isAvailable: true);
+
+        var mockItemRepo = new Mock<ITransactionalRepository<RestaurantItem>>();
+        mockItemRepo.Setup(r => r.GetByIdAsync(itemId, It.IsAny<CancellationToken>())).ReturnsAsync(item);
+        _mockUow.Setup(u => u.GetRepository<RestaurantItem>()).Returns(mockItemRepo.Object);
+
+        var handler = new DeleteMenuItemCommandHandler(_mockUow.Object);
+        var command = new DeleteMenuItemCommand(itemId);
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        item.IsDeleted.Should().BeTrue();
+        item.IsAvailable.Should().BeFalse();
+        item.DeletedAtUtc.Should().NotBeNull();
+        mockItemRepo.Verify(r => r.UpdateAsync(item, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteMenuItemCommandHandler_Should_Fail_When_Item_Not_Found()
+    {
+        // Arrange
+        var itemId = Guid.NewGuid();
+        var mockItemRepo = new Mock<ITransactionalRepository<RestaurantItem>>();
+        mockItemRepo.Setup(r => r.GetByIdAsync(itemId, It.IsAny<CancellationToken>())).ReturnsAsync((RestaurantItem?)null);
+        _mockUow.Setup(u => u.GetRepository<RestaurantItem>()).Returns(mockItemRepo.Object);
+
+        var handler = new DeleteMenuItemCommandHandler(_mockUow.Object);
+        var command = new DeleteMenuItemCommand(itemId);
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Contain("not found");
+        mockItemRepo.Verify(r => r.UpdateAsync(It.IsAny<RestaurantItem>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

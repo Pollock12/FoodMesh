@@ -217,6 +217,28 @@ public class ApiControllerTests
         response.Data.Should().Be(itemId);
     }
 
+    [Fact]
+    public async Task MenuController_DeleteMenuItem_Should_Return_Ok()
+    {
+        // Arrange
+        var itemId = Guid.NewGuid();
+        _mockMediator
+            .Setup(m => m.Send(It.Is<DeleteMenuItemCommand>(c => c.MenuItemId == itemId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<bool>.Success(true));
+
+        var controller = SetupController(new MenuController());
+
+        // Act
+        var result = await controller.DeleteMenuItem(itemId);
+
+        // Assert
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var response = okResult.Value.Should().BeOfType<ApiResponse<bool>>().Subject;
+        response.Success.Should().BeTrue();
+        response.Data.Should().BeTrue();
+        response.Message.Should().Be("Menu item removed successfully.");
+    }
+
 
     [Fact]
     public async Task ExceptionHandlingMiddleware_Should_Catch_DomainException_And_Return_BadRequest()

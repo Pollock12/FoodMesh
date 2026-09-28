@@ -9,6 +9,5 @@ namespace FoodMesh.Application.CommandServices;
 public interface IOrderCommandService
 {
     Task<Order?> GetOrderAsync(Guid orderId, CancellationToken cancellationToken = default);
-    Task<bool> IsRestaurantActiveAsync(Guid restaurantId, CancellationToken cancellationToken = default);
     Task<bool> AreMenuItemsAvailableAsync(Guid restaurantId, IEnumerable<Guid> menuItemIds, CancellationToken cancellationToken = default);
 }

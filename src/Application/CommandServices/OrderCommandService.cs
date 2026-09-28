@@ -23,18 +23,6 @@ public sealed class OrderCommandService : IOrderCommandService
         return await repo.GetByIdAsync(orderId, cancellationToken);
     }
 
-    public async Task<bool> IsRestaurantActiveAsync(Guid restaurantId, CancellationToken cancellationToken = default)
-    {
-        if (restaurantId == Guid.Empty) return false;
-
-        // Verify restaurant has active menu items in database (or returns true if restaurant exists)
-        var repo = _unitOfWork.GetRepository<RestaurantItem>();
-        var items = await repo.FindAsync(i => i.RestaurantId == restaurantId && i.IsAvailable, cancellationToken);
-        
-        // If restaurant has at least 1 item or exists, it is active
-        return items.Count > 0;
-    }
-
     public async Task<bool> AreMenuItemsAvailableAsync(
         Guid restaurantId,
         IEnumerable<Guid> menuItemIds,
@@ -44,7 +32,7 @@ public sealed class OrderCommandService : IOrderCommandService
         var idList = menuItemIds.ToList();
 
         var availableItems = await repo.FindAsync(
-            i => i.RestaurantId == restaurantId && idList.Contains(i.Id) && i.IsAvailable,
+            i => i.RestaurantId == restaurantId && idList.Contains(i.Id) && i.IsAvailable && !i.IsDeleted,
             cancellationToken);
 
         return availableItems.Count == idList.Count;
