@@ -65,7 +65,7 @@ public class ReadQueryAndEventHandlerTests
         var deliveredHandler = new OrderDeliveredEventHandler(mockLoggerDelivered.Object);
 
         var orderId = Guid.NewGuid();
-        var placedEvent = new OrderPlacedDomainEvent(orderId, Guid.NewGuid(), Guid.NewGuid(), new Money(25m, "USD"), DateTime.UtcNow);
+        var placedEvent = new OrderPlacedDomainEvent(orderId, Guid.NewGuid(), new Money(25m, "USD"), DateTime.UtcNow);
         var paidEvent = new OrderPaidDomainEvent(orderId, "TXN_123", new Money(25m, "USD"), DateTime.UtcNow);
         var outEvent = new OrderOutForDeliveryDomainEvent(orderId, DateTime.UtcNow);
         var deliveredEvent = new OrderDeliveredDomainEvent(orderId, DateTime.UtcNow);

@@ -9,7 +9,7 @@ namespace FoodMesh.BusinessApiService.Controllers;
 public sealed class PaymentsController : BaseApiController
 {
     /// <summary>
-    /// Processes payment for an order and triggers food preparation.
+    /// Processes payment for an order and marks it as Paid.
     /// </summary>
     [HttpPost("process")]
     [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status200OK)]

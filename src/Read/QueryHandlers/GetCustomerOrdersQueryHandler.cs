@@ -37,7 +37,6 @@ public sealed class GetCustomerOrdersQueryHandler : IRequestHandler<GetCustomerO
         {
             OrderId = o.Id,
             CustomerId = o.CustomerId,
-            RestaurantId = o.RestaurantId,
             Status = o.Status.ToString(),
             ItemCount = o.Items.Count,
             TotalAmount = o.TotalAmount.Amount,

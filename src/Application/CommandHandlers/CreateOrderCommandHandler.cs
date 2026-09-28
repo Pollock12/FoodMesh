@@ -45,7 +45,6 @@ public sealed class CreateOrderCommandHandler : IRequestHandler<CreateOrderComma
         {
             // 1. Business checks delegated to CommandService (the Database Researcher)
             var areItemsAvailable = await _orderCommandService.AreMenuItemsAvailableAsync(
-                command.RestaurantId,
                 command.Items.Select(i => i.MenuItemId),
                 cancellationToken);
 

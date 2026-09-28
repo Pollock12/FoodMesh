@@ -14,7 +14,6 @@ public sealed class Order : AggregateRoot<Guid>
     private List<OrderItem> _items = [];
 
     public Guid CustomerId { get; private set; }
-    public Guid RestaurantId { get; private set; }
     public DeliveryAddress DeliveryAddress { get; private set; } = default!;
     public OrderStatus Status { get; private set; }
     public PaymentStatus PaymentStatus { get; private set; }
@@ -50,20 +49,15 @@ public sealed class Order : AggregateRoot<Guid>
     private Order(
         Guid id,
         Guid customerId,
-        Guid restaurantId,
         DeliveryAddress deliveryAddress,
         Money deliveryFee) : base(id)
     {
         if (customerId == Guid.Empty)
             throw new DomainException("Customer ID cannot be empty.", "INVALID_CUSTOMER");
 
-        if (restaurantId == Guid.Empty)
-            throw new DomainException("Restaurant ID cannot be empty.", "INVALID_RESTAURANT");
-
         DeliveryAddress = deliveryAddress ?? throw new DomainException("Delivery address is required.", "MISSING_ADDRESS");
         DeliveryFee = deliveryFee ?? Money.Zero();
         CustomerId = customerId;
-        RestaurantId = restaurantId;
         Status = OrderStatus.PendingPayment;
         PaymentStatus = PaymentStatus.Pending;
         PlacedAtUtc = DateTime.UtcNow;
@@ -75,12 +69,11 @@ public sealed class Order : AggregateRoot<Guid>
     public static Order Create(
         Guid id,
         Guid customerId,
-        Guid restaurantId,
         DeliveryAddress deliveryAddress,
         Money deliveryFee)
     {
-        var order = new Order(id, customerId, restaurantId, deliveryAddress, deliveryFee);
-        order.AddDomainEvent(new OrderPlacedDomainEvent(order.Id, customerId, restaurantId, order.TotalAmount, order.PlacedAtUtc));
+        var order = new Order(id, customerId, deliveryAddress, deliveryFee);
+        order.AddDomainEvent(new OrderPlacedDomainEvent(order.Id, customerId, order.TotalAmount, order.PlacedAtUtc));
         return order;
     }
 
@@ -92,7 +85,7 @@ public sealed class Order : AggregateRoot<Guid>
     {
         ArgumentNullException.ThrowIfNull(dto);
 
-        var order = new Order(dto.OrderId, dto.CustomerId, dto.RestaurantId, dto.DeliveryAddress, dto.DeliveryFee);
+        var order = new Order(dto.OrderId, dto.CustomerId, dto.DeliveryAddress, dto.DeliveryFee);
         if (dto.Items != null)
         {
             foreach (var item in dto.Items)
@@ -101,7 +94,7 @@ public sealed class Order : AggregateRoot<Guid>
             }
         }
 
-        order.AddDomainEvent(new OrderPlacedDomainEvent(order.Id, dto.CustomerId, dto.RestaurantId, order.TotalAmount, order.PlacedAtUtc));
+        order.AddDomainEvent(new OrderPlacedDomainEvent(order.Id, dto.CustomerId, order.TotalAmount, order.PlacedAtUtc));
         return order;
     }
 
@@ -167,7 +160,7 @@ public sealed class Order : AggregateRoot<Guid>
     /// <summary>
     /// Updates order status to Cooking when the chef begins cooking the meal.
     /// </summary>
-    public void StartPreparation()
+    public void StartCooking()
     {
         if (Status != OrderStatus.Paid)
             throw new DomainException("Order must be paid before preparation starts.", "ORDER_NOT_PAID");
@@ -178,11 +171,6 @@ public sealed class Order : AggregateRoot<Guid>
 
         AddDomainEvent(new OrderCookingStartedDomainEvent(Id, CookingStartedAtUtc.Value));
     }
-
-    /// <summary>
-    /// Chef begins cooking the meal in the restaurant kitchen.
-    /// </summary>
-    public void StartCooking() => StartPreparation();
 
 
     /// <summary>

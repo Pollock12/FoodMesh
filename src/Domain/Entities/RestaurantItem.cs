@@ -4,12 +4,11 @@ using FoodMesh.Shared.Common;
 namespace FoodMesh.Domain.Entities;
 
 /// <summary>
-/// Entity representing a food item offered by a Restaurant menu.
+/// Entity representing a food item offered on the restaurant menu.
 /// Supports soft delete so historical orders maintain item integrity.
 /// </summary>
 public sealed class RestaurantItem : Entity<Guid>
 {
-    public Guid RestaurantId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
     public Money Price { get; private set; } = default!;
@@ -22,7 +21,6 @@ public sealed class RestaurantItem : Entity<Guid>
 
     public RestaurantItem(
         Guid id,
-        Guid restaurantId,
         string name,
         string description,
         Money price,
@@ -30,16 +28,12 @@ public sealed class RestaurantItem : Entity<Guid>
         bool isAvailable = true,
         bool isDeleted = false) : base(id)
     {
-        if (restaurantId == Guid.Empty)
-            throw new DomainException("Restaurant identifier cannot be empty.", "INVALID_RESTAURANT_ID");
-
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Item name cannot be empty.", "INVALID_NAME");
 
         if (price is null || price.Amount < 0)
             throw new DomainException("Price cannot be negative.", "INVALID_PRICE");
 
-        RestaurantId = restaurantId;
         Name = name.Trim();
         Description = description?.Trim() ?? string.Empty;
         Price = price;

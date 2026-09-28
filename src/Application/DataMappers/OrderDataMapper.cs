@@ -56,7 +56,6 @@ public static class OrderDataMapper
         return new FoodMesh.Domain.Models.OrderCreationDto(
             OrderId: orderId,
             CustomerId: command.CustomerId,
-            RestaurantId: command.RestaurantId,
             DeliveryAddress: address,
             DeliveryFee: deliveryFee,
             Items: items);

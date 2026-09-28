@@ -21,11 +21,10 @@ public class OrderAggregateTests
         // Arrange
         var orderId = Guid.NewGuid();
         var customerId = Guid.NewGuid();
-        var restaurantId = Guid.NewGuid();
         var deliveryFee = new Money(2.50m, "USD");
 
         // Act
-        var order = Order.Create(orderId, customerId, restaurantId, _address, deliveryFee);
+        var order = Order.Create(orderId, customerId, _address, deliveryFee);
 
         // Assert
         order.Id.Should().Be(orderId);
@@ -45,7 +44,7 @@ public class OrderAggregateTests
     public void Order_AddItem_Should_Recalculate_Subtotal_And_Total()
     {
         // Arrange
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), _address, new Money(3.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), _address, new Money(3.00m, "USD"));
         var burgerId = Guid.NewGuid();
 
         // Act
@@ -61,7 +60,7 @@ public class OrderAggregateTests
     public void Order_MarkAsPaid_Should_Transition_To_Paid_And_Raise_OrderPaidDomainEvent()
     {
         // Arrange
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Pasta", new Money(12.00m, "USD"), 1);
 
         // Act (Total = 14.00 USD)
@@ -80,7 +79,7 @@ public class OrderAggregateTests
     public void Order_MarkAsPaid_Should_Throw_When_Underpaid()
     {
         // Arrange
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Pasta", new Money(12.00m, "USD"), 1);
 
         // Act (Total is 14.00, paying 10.00)
@@ -95,7 +94,7 @@ public class OrderAggregateTests
     public void Order_Should_Follow_Full_Lifecycle_Successfully()
     {
         // Arrange
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Pizza", new Money(15.00m, "USD"), 1);
         var riderId = Guid.NewGuid();
 
@@ -123,7 +122,7 @@ public class OrderAggregateTests
     public void Order_Can_Be_Cancelled_Before_Payment()
     {
         // Arrange
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Burger", new Money(10.00m, "USD"), 1);
 
         // Act
@@ -138,7 +137,7 @@ public class OrderAggregateTests
     public void Order_Cannot_Be_Cancelled_After_Payment()
     {
         // Arrange
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Pizza", new Money(15.00m, "USD"), 1);
         order.MarkAsPaid("TXN_123", new Money(17.00m, "USD"));
 
@@ -154,10 +153,10 @@ public class OrderAggregateTests
     public void Order_Cannot_Be_Cancelled_After_Delivered()
     {
         // Arrange
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), _address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Pizza", new Money(15.00m, "USD"), 1);
         order.MarkAsPaid("TXN_999", new Money(17.00m, "USD"));
-        order.StartPreparation();
+        order.StartCooking();
         order.DispatchForDelivery();
         order.MarkDelivered();
 

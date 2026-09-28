@@ -13,7 +13,6 @@ namespace FoodMesh.Application.CommandHandlers;
 /// </summary>
 public sealed class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemCommand, Result<Guid>>
 {
-    private static readonly Guid DefaultRestaurantId = Guid.Parse("11111111-1111-1111-1111-111111111111");
     private readonly IMongoUnitOfWork _unitOfWork;
 
     public AddMenuItemCommandHandler(IMongoUnitOfWork unitOfWork)
@@ -29,15 +28,10 @@ public sealed class AddMenuItemCommandHandler : IRequestHandler<AddMenuItemComma
         if (command.Price < 0)
             return Result<Guid>.Failure("Item price cannot be negative.");
 
-        var restaurantId = command.RestaurantId.HasValue && command.RestaurantId.Value != Guid.Empty
-            ? command.RestaurantId.Value
-            : DefaultRestaurantId;
-
         try
         {
             var item = new RestaurantItem(
                 Guid.NewGuid(),
-                restaurantId,
                 command.Name,
                 command.Description,
                 new Money(command.Price, string.IsNullOrWhiteSpace(command.Currency) ? "USD" : command.Currency.Trim()),

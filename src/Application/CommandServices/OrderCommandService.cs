@@ -24,7 +24,6 @@ public sealed class OrderCommandService : IOrderCommandService
     }
 
     public async Task<bool> AreMenuItemsAvailableAsync(
-        Guid restaurantId,
         IEnumerable<Guid> menuItemIds,
         CancellationToken cancellationToken = default)
     {
@@ -32,7 +31,7 @@ public sealed class OrderCommandService : IOrderCommandService
         var idList = menuItemIds.ToList();
 
         var availableItems = await repo.FindAsync(
-            i => i.RestaurantId == restaurantId && idList.Contains(i.Id) && i.IsAvailable && !i.IsDeleted,
+            i => idList.Contains(i.Id) && i.IsAvailable && !i.IsDeleted,
             cancellationToken);
 
         return availableItems.Count == idList.Count;

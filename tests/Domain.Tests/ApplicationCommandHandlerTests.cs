@@ -35,7 +35,7 @@ public class ApplicationCommandHandlerTests
             .Returns<Func<MongoDB.Driver.IClientSessionHandle, Task>, CancellationToken>((action, ct) => action(Mock.Of<MongoDB.Driver.IClientSessionHandle>()));
 
         // Default setup for CommandService researcher queries
-        _mockOrderCommandService.Setup(s => s.AreMenuItemsAvailableAsync(It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _mockOrderCommandService.Setup(s => s.AreMenuItemsAvailableAsync(It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
     }
 
     [Fact]
@@ -54,7 +54,6 @@ public class ApplicationCommandHandlerTests
 
         var command = new CreateOrderCommand(
             CustomerId: Guid.NewGuid(),
-            RestaurantId: Guid.NewGuid(),
             DeliveryAddress: new DeliveryAddressDto
             {
                 Street = "123 Main St",
@@ -74,7 +73,7 @@ public class ApplicationCommandHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeEmpty();
 
-        _mockOrderCommandService.Verify(s => s.AreMenuItemsAvailableAsync(command.RestaurantId, It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mockOrderCommandService.Verify(s => s.AreMenuItemsAvailableAsync(It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()), Times.Once);
         _mockOrderRepo.Verify(r => r.InsertAsync(It.Is<Order>(o => o.Id == result.Value), It.IsAny<CancellationToken>()), Times.Once);
         _mockPublisher.Verify(p => p.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -84,7 +83,7 @@ public class ApplicationCommandHandlerTests
     {
         // Arrange
         _mockOrderCommandService
-            .Setup(s => s.AreMenuItemsAvailableAsync(It.IsAny<Guid>(), It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.AreMenuItemsAvailableAsync(It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
         var handler = new CreateOrderCommandHandler(
@@ -95,7 +94,6 @@ public class ApplicationCommandHandlerTests
 
         var command = new CreateOrderCommand(
             CustomerId: Guid.NewGuid(),
-            RestaurantId: Guid.NewGuid(),
             DeliveryAddress: new DeliveryAddressDto { Street = "A", City = "B", ContactPhoneNumber = "123" },
             Items: [new OrderItemDto { MenuItemId = Guid.NewGuid(), ItemName = "Burger", UnitPrice = 10m, Quantity = 1 }]);
 
@@ -119,7 +117,6 @@ public class ApplicationCommandHandlerTests
 
         var command = new CreateOrderCommand(
             CustomerId: Guid.NewGuid(),
-            RestaurantId: Guid.NewGuid(),
             DeliveryAddress: new DeliveryAddressDto { Street = "A", City = "B", ContactPhoneNumber = "123" },
             Items: []);
 
@@ -136,7 +133,7 @@ public class ApplicationCommandHandlerTests
     {
         // Arrange
         var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Pizza", new Money(15.00m, "USD"), 1);
 
         _mockOrderCommandService.Setup(s => s.GetOrderAsync(order.Id, It.IsAny<CancellationToken>())).ReturnsAsync(order);
@@ -172,7 +169,7 @@ public class ApplicationCommandHandlerTests
     {
         // Arrange
         var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Salad", new Money(8.00m, "USD"), 1);
 
         _mockOrderCommandService.Setup(s => s.GetOrderAsync(order.Id, It.IsAny<CancellationToken>())).ReturnsAsync(order);
@@ -199,7 +196,7 @@ public class ApplicationCommandHandlerTests
     {
         // Arrange
         var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Burger", new Money(10.00m, "USD"), 1);
         order.MarkAsPaid("TXN_PAID", new Money(12.00m, "USD"));
 
@@ -226,7 +223,7 @@ public class ApplicationCommandHandlerTests
     {
         // Arrange
         var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Steak", new Money(25.00m, "USD"), 1);
         order.MarkAsPaid("TXN_999", new Money(27.00m, "USD"));
 
@@ -256,7 +253,7 @@ public class ApplicationCommandHandlerTests
     {
         // Arrange
         var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Steak", new Money(25.00m, "USD"), 1);
         order.MarkAsPaid("TXN_999", new Money(27.00m, "USD"));
         order.StartCooking();
@@ -286,7 +283,7 @@ public class ApplicationCommandHandlerTests
     {
         // Arrange
         var address = new DeliveryAddress("Street", "City", "1212", "01700000000");
-        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
+        var order = Order.Create(Guid.NewGuid(), Guid.NewGuid(), address, new Money(2.00m, "USD"));
         order.AddItem(Guid.NewGuid(), "Steak", new Money(25.00m, "USD"), 1);
         order.MarkAsPaid("TXN_999", new Money(27.00m, "USD"));
         order.StartCooking();
@@ -359,7 +356,7 @@ public class ApplicationCommandHandlerTests
     {
         // Arrange
         var itemId = Guid.NewGuid();
-        var item = new RestaurantItem(itemId, Guid.NewGuid(), "Burger", "Juicy", new Money(10m, "USD"), "Food", isAvailable: true);
+        var item = new RestaurantItem(itemId, "Burger", "Juicy", new Money(10m, "USD"), "Food", isAvailable: true);
 
         var mockItemRepo = new Mock<ITransactionalRepository<RestaurantItem>>();
         mockItemRepo.Setup(r => r.GetByIdAsync(itemId, It.IsAny<CancellationToken>())).ReturnsAsync(item);

@@ -34,7 +34,6 @@ public sealed class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery
         {
             OrderId = order.Id,
             CustomerId = order.CustomerId,
-            RestaurantId = order.RestaurantId,
             Status = order.Status.ToString(),
             PaymentStatus = order.PaymentStatus.ToString(),
             PaymentTransactionId = order.PaymentTransactionId,

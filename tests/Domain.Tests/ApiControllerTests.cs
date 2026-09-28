@@ -48,7 +48,6 @@ public class ApiControllerTests
         var controller = SetupController(new OrdersController());
         var command = new CreateOrderCommand(
             CustomerId: Guid.NewGuid(),
-            RestaurantId: Guid.NewGuid(),
             DeliveryAddress: new DeliveryAddressDto { Street = "A", City = "B", ContactPhoneNumber = "123" },
             Items: [new OrderItemDto { MenuItemId = Guid.NewGuid(), ItemName = "Pizza", UnitPrice = 15m, Quantity = 1 }]);
 
@@ -73,7 +72,6 @@ public class ApiControllerTests
         var controller = SetupController(new OrdersController());
         var command = new CreateOrderCommand(
             CustomerId: Guid.NewGuid(),
-            RestaurantId: Guid.NewGuid(),
             DeliveryAddress: new DeliveryAddressDto { Street = "A", City = "B", ContactPhoneNumber = "123" },
             Items: []);
 

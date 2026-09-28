@@ -19,7 +19,6 @@ public sealed record OrderItemCreationDto(
 public sealed record OrderCreationDto(
     Guid OrderId,
     Guid CustomerId,
-    Guid RestaurantId,
     DeliveryAddress DeliveryAddress,
     Money DeliveryFee,
     IReadOnlyList<OrderItemCreationDto> Items);

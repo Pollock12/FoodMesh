@@ -48,7 +48,7 @@ public class InfrastructureTests
         var address = new FoodMesh.Domain.ValueObjects.DeliveryAddress(
             "123 Street", "Dhaka", "1212", "+8801700000000");
         var order = FoodMesh.Domain.Aggregates.Order.Create(
-            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), address, new FoodMesh.Domain.ValueObjects.Money(3.50m, "USD"));
+            Guid.NewGuid(), Guid.NewGuid(), address, new FoodMesh.Domain.ValueObjects.Money(3.50m, "USD"));
         order.AddItem(Guid.NewGuid(), "Hot Pizza", new FoodMesh.Domain.ValueObjects.Money(15.00m, "USD"), 2);
 
         // Act - Serialize to BSON Document
@@ -79,7 +79,7 @@ public class InfrastructureTests
 
         // Arrange
         var item = new FoodMesh.Domain.Entities.RestaurantItem(
-            Guid.NewGuid(), Guid.NewGuid(), "Burger", "Delicious", new FoodMesh.Domain.ValueObjects.Money(8.50m, "USD"), "FastFood");
+            Guid.NewGuid(), "Burger", "Delicious", new FoodMesh.Domain.ValueObjects.Money(8.50m, "USD"), "FastFood");
 
         // Act
         var itemDoc = item.ToBsonDocument();

@@ -10,8 +10,6 @@ namespace FoodMesh.Infrastructure;
 /// </summary>
 public static class DatabaseSeeder
 {
-    public static readonly Guid DefaultRestaurantId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-
     public static async Task SeedAsync(IMongoDatabase database)
     {
         var itemsCollection = database.GetCollection<RestaurantItem>("RestaurantItems");
@@ -24,7 +22,6 @@ public static class DatabaseSeeder
             {
                 new(
                     Guid.Parse("11111111-1111-1111-1111-000000000001"),
-                    DefaultRestaurantId,
                     "Classic Cheeseburger",
                     "Juicy beef patty with aged cheddar, lettuce, tomato, and special sauce.",
                     new Money(12.99m, "USD"),
@@ -33,7 +30,6 @@ public static class DatabaseSeeder
                 ),
                 new(
                     Guid.Parse("11111111-1111-1111-1111-000000000002"),
-                    DefaultRestaurantId,
                     "Smoky BBQ Bacon Burger",
                     "Grilled beef patty topped with smoked bacon, crispy onions, and tangy BBQ sauce.",
                     new Money(14.50m, "USD"),
@@ -42,7 +38,6 @@ public static class DatabaseSeeder
                 ),
                 new(
                     Guid.Parse("11111111-1111-1111-1111-000000000003"),
-                    DefaultRestaurantId,
                     "Crispy French Fries",
                     "Golden, crunchy salted fries with garlic mayo dip.",
                     new Money(4.50m, "USD"),
@@ -51,7 +46,6 @@ public static class DatabaseSeeder
                 ),
                 new(
                     Guid.Parse("22222222-2222-2222-2222-000000000001"),
-                    DefaultRestaurantId,
                     "Margherita Pizza",
                     "Classic sourdough base with San Marzano tomatoes, fresh mozzarella, and basil.",
                     new Money(15.00m, "USD"),
@@ -60,7 +54,6 @@ public static class DatabaseSeeder
                 ),
                 new(
                     Guid.Parse("22222222-2222-2222-2222-000000000002"),
-                    DefaultRestaurantId,
                     "Pepperoni Feast",
                     "Loaded with artisanal beef pepperoni and melted mozzarella cheese.",
                     new Money(18.50m, "USD"),
@@ -69,7 +62,6 @@ public static class DatabaseSeeder
                 ),
                 new(
                     Guid.Parse("22222222-2222-2222-2222-000000000003"),
-                    DefaultRestaurantId,
                     "Cheesy Garlic Bread",
                     "Toasted baguette brushed with garlic butter and melted mozzarella.",
                     new Money(5.50m, "USD"),

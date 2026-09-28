@@ -7,7 +7,6 @@ public sealed class OrderSummaryViewModel
 {
     public Guid OrderId { get; set; }
     public Guid CustomerId { get; set; }
-    public Guid RestaurantId { get; set; }
     public string Status { get; set; } = string.Empty;
     public int ItemCount { get; set; }
     public decimal TotalAmount { get; set; }

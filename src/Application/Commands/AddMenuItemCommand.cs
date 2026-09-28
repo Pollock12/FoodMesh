@@ -12,5 +12,4 @@ public sealed record AddMenuItemCommand(
     decimal Price,
     string Currency = "USD",
     string Category = "General",
-    bool IsAvailable = true,
-    Guid? RestaurantId = null) : IRequest<Result<Guid>>;
+    bool IsAvailable = true) : IRequest<Result<Guid>>;
